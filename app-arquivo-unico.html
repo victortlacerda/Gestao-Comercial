@@ -1,0 +1,3297 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#1E73D3" />
+<title>Gestão Comercial — Sammour Engenharia</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@600;700&display=swap" rel="stylesheet">
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="Gestão Comercial" />
+<style>
+/* ===========================================================
+   Gestão Comercial — Sammour Engenharia
+   Paleta: azul claro + branco
+   =========================================================== */
+:root{
+  --canvas:#F1F6FC;
+  --surface:#FFFFFF;
+  --brand:#1E73D3;
+  --brand-dark:#12508F;
+  --brand-soft:#E4F0FD;
+  --brand-softer:#F4F9FF;
+  --ink:#0E2338;
+  --ink-soft:#5B7590;
+  --line:#DCE7F2;
+  --ok:#10996B;
+  --ok-soft:#E3F6EE;
+  --warn:#D9891B;
+  --warn-soft:#FCF1DF;
+  --bad:#D64545;
+  --bad-soft:#FBE7E7;
+  --radius:14px;
+  --radius-sm:9px;
+  --shadow:0 1px 2px rgba(14,35,56,.05), 0 8px 24px rgba(14,35,56,.06);
+  --sidebar:248px;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+  background:var(--canvas);
+  color:var(--ink);
+  font-size:15px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3{font-family:'Sora','Inter',sans-serif;margin:0;letter-spacing:-.01em}
+h1{font-size:22px}
+h2{font-size:15px}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+button{cursor:pointer}
+code{background:var(--brand-soft);padding:1px 5px;border-radius:5px;font-size:.9em}
+::selection{background:var(--brand-soft)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
+
+/* ---------- Layout ---------- */
+.app{display:flex;min-height:100vh}
+.sidebar{
+  width:var(--sidebar);flex:0 0 var(--sidebar);
+  background:var(--surface);border-right:1px solid var(--line);
+  display:flex;flex-direction:column;position:sticky;top:0;height:100vh;padding:20px 14px;
+}
+.brand{display:flex;gap:10px;align-items:center;padding:0 6px 20px}
+.brand-mark{
+  width:38px;height:38px;border-radius:11px;flex:none;
+  background:linear-gradient(140deg,var(--brand),var(--brand-dark));
+  color:#fff;display:grid;place-items:center;font-family:'Sora';font-weight:700;font-size:14px;
+}
+.brand-text{display:flex;flex-direction:column;line-height:1.25}
+.brand-text strong{font-size:14px}
+.brand-text span{font-size:11.5px;color:var(--ink-soft)}
+.nav{display:flex;flex-direction:column;gap:2px;flex:1}
+.nav-item{
+  display:flex;align-items:center;gap:10px;border:0;background:none;text-align:left;
+  padding:10px 12px;border-radius:var(--radius-sm);color:var(--ink-soft);font-weight:500;
+}
+.nav-item:hover{background:var(--brand-softer);color:var(--ink)}
+.nav-item.is-active{background:var(--brand-soft);color:var(--brand-dark);font-weight:600}
+.nav-ico{width:18px;text-align:center;opacity:.75}
+.sidebar-foot{border-top:1px solid var(--line);padding-top:14px}
+.hint{font-size:11.5px;color:var(--ink-soft);margin:10px 2px 0}
+
+.main{flex:1;min-width:0;display:flex;flex-direction:column}
+.topbar{
+  display:flex;justify-content:space-between;align-items:center;gap:16px;
+  padding:20px 26px;background:var(--surface);border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:20;
+}
+.subtitle{margin:2px 0 0;color:var(--ink-soft);font-size:13px}
+.topbar-actions{display:flex;gap:8px;align-items:center}
+.views{padding:22px 26px 40px}
+.view{display:none}
+.view.is-active{display:block;animation:fade .18s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+/* ---------- Controles ---------- */
+.btn{
+  border:1px solid transparent;border-radius:10px;padding:9px 14px;font-weight:600;font-size:13.5px;
+  transition:.15s background,.15s border-color,.15s transform;
+}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--brand);color:#fff}
+.btn-primary:hover{background:var(--brand-dark)}
+.btn-ghost{background:var(--surface);border-color:var(--line);color:var(--ink)}
+.btn-ghost:hover{background:var(--brand-softer);border-color:var(--brand-soft)}
+.btn-danger{background:var(--bad);color:#fff}
+.btn-sm{padding:7px 11px;font-size:12.5px}
+.btn-block{width:100%}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.icon-btn{background:none;border:0;font-size:16px;color:var(--ink-soft);padding:6px;border-radius:8px}
+.icon-btn:hover{background:var(--brand-softer);color:var(--ink)}
+
+.input{
+  background:var(--surface);border:1px solid var(--line);border-radius:10px;
+  padding:9px 12px;min-width:0;color:var(--ink);
+}
+.input:focus{border-color:var(--brand);outline:none;box-shadow:0 0 0 3px var(--brand-soft)}
+.input-sm{padding:8px 10px;font-size:13px}
+select.input{appearance:none;background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235B7590' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 11px center;padding-right:28px}
+.period-select select{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:9px 28px 9px 12px;font-size:13.5px;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg width='10' height='6' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235B7590' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center}
+.check{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--ink-soft)}
+.field{display:flex;flex-direction:column;gap:5px;margin-bottom:12px}
+.field span{font-size:12.5px;font-weight:600;color:var(--ink-soft)}
+.toolbar{display:flex;gap:8px;align-items:center;margin-bottom:16px}
+.toolbar-wrap{flex-wrap:wrap}
+.toolbar .input[type=search]{flex:1;min-width:200px}
+
+/* ---------- KPIs ---------- */
+.kpi-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin-bottom:18px}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 16px 14px;box-shadow:var(--shadow)}
+.kpi-label{font-size:12px;color:var(--ink-soft);font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.kpi-value{font-family:'Sora';font-size:26px;font-weight:700;margin:6px 0 2px;font-variant-numeric:tabular-nums}
+.kpi-foot{font-size:12px;color:var(--ink-soft)}
+.kpi-foot strong{color:var(--ok)}
+.kpi-foot.is-bad strong{color:var(--bad)}
+.kpi-meter{height:5px;background:var(--brand-soft);border-radius:99px;margin-top:9px;overflow:hidden}
+.kpi-meter i{display:block;height:100%;background:var(--brand);border-radius:99px}
+
+/* ---------- Painéis ---------- */
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:16px 18px 18px;box-shadow:var(--shadow);margin-bottom:16px}
+.panel-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:12px}
+.panel-note{font-size:12px;color:var(--ink-soft)}
+.panel-text{font-size:13px;color:var(--ink-soft);margin:0 0 12px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.chart-box{position:relative;height:280px}
+.chart-sm{height:240px}
+
+/* ---------- Funil (assinatura visual) ---------- */
+.funnel{display:flex;flex-direction:column;gap:7px}
+.funnel-row{display:grid;grid-template-columns:150px 1fr auto;gap:12px;align-items:center}
+.funnel-name{font-size:13px;font-weight:600;color:var(--ink-soft)}
+.funnel-track{background:var(--brand-softer);border-radius:8px;height:32px;overflow:hidden;position:relative}
+.funnel-fill{height:100%;border-radius:8px;background:linear-gradient(90deg,var(--brand),#4E97E8);display:flex;align-items:center;padding-left:10px;color:#fff;font-size:12.5px;font-weight:600;min-width:2px;transition:width .5s cubic-bezier(.2,.7,.3,1)}
+.funnel-row[data-tone="ok"] .funnel-fill{background:linear-gradient(90deg,var(--ok),#3FC191)}
+.funnel-row[data-tone="bad"] .funnel-fill{background:linear-gradient(90deg,#B85C5C,#DC8181)}
+.funnel-value{font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--ink)}
+
+/* ---------- Listas resumidas ---------- */
+.mini-list{display:flex;flex-direction:column}
+.mini-row{display:flex;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px solid var(--line);font-size:13.5px}
+.mini-row:last-child{border-bottom:0}
+.mini-row .m-main{min-width:0}
+.mini-row strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mini-row small{color:var(--ink-soft);font-size:12px}
+.mini-row .m-val{font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.mini-row.clickable{cursor:pointer;border-radius:8px;padding-left:8px;padding-right:8px;margin:0 -8px}
+.mini-row.clickable:hover{background:var(--brand-softer)}
+.empty{color:var(--ink-soft);font-size:13px;padding:18px 0;text-align:center}
+
+/* ---------- Kanban ---------- */
+.kanban{display:grid;grid-auto-flow:column;grid-auto-columns:262px;gap:12px;overflow-x:auto;padding-bottom:14px}
+.column{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);display:flex;flex-direction:column;min-height:220px}
+.column.drag-over{border-color:var(--brand);background:var(--brand-softer)}
+.column-head{padding:12px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:8px;position:sticky;top:0;background:var(--surface);border-radius:var(--radius) var(--radius) 0 0}
+.column-head strong{font-size:13px}
+.column-count{background:var(--brand-soft);color:var(--brand-dark);font-size:11.5px;font-weight:700;border-radius:99px;padding:2px 8px}
+.column-sum{font-size:11.5px;color:var(--ink-soft);padding:0 14px 10px;border-bottom:1px solid var(--line)}
+.column-body{padding:10px;display:flex;flex-direction:column;gap:8px;overflow-y:auto;max-height:62vh}
+.card{border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 11px;background:var(--surface);cursor:pointer}
+.card:hover{border-color:var(--brand-soft);background:var(--brand-softer)}
+.card.dragging{opacity:.45}
+.card-top{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--ink-soft)}
+.card-title{font-weight:600;font-size:13px;margin:4px 0 3px;line-height:1.3}
+.card-meta{font-size:12px;color:var(--ink-soft);display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:6px}
+.card-value{font-weight:700;font-size:13px;font-variant-numeric:tabular-nums}
+
+/* ---------- Tabela ---------- */
+.table-wrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);overflow:auto;box-shadow:var(--shadow)}
+.table{width:100%;border-collapse:collapse;font-size:13.5px}
+.table th{
+  text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);
+  padding:11px 14px;border-bottom:1px solid var(--line);white-space:nowrap;cursor:pointer;background:var(--brand-softer);position:sticky;top:0;z-index:1;
+}
+.table th:hover{color:var(--brand-dark)}
+.table td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:middle}
+.table tbody tr:hover{background:var(--brand-softer);cursor:pointer}
+.table tbody tr:last-child td{border-bottom:0}
+.table .num{text-align:right;font-variant-numeric:tabular-nums}
+.bulk-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--brand-soft);border:1px solid #C9E0F8;
+  border-radius:var(--radius-sm);padding:9px 12px;margin-bottom:10px;font-size:13px;color:var(--brand-dark)}
+.bulk-bar[hidden]{display:none !important}
+.bulk-bar .bulk-danger{margin-left:auto}
+.table th.sel,.table td.sel{width:34px;padding-right:0;cursor:default}
+.card-sel{margin-right:8px;vertical-align:middle}
+.stage-age{font-size:11.5px;color:var(--ink-soft);display:block;margin-top:3px}
+.result-count{font-size:12.5px;color:var(--ink-soft);margin:0 0 10px}
+.cards-mobile{display:none}
+
+/* ---------- Etiquetas ---------- */
+.tag{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;border-radius:99px;padding:3px 9px;white-space:nowrap}
+.tag-neutral{background:var(--brand-soft);color:var(--brand-dark)}
+.tag-ok{background:var(--ok-soft);color:var(--ok)}
+.tag-warn{background:var(--warn-soft);color:var(--warn)}
+.tag-bad{background:var(--bad-soft);color:var(--bad)}
+.dot{width:7px;height:7px;border-radius:99px;background:currentColor;display:inline-block}
+.tag-agenda{background:var(--brand-softer);color:var(--brand-dark);margin-left:6px}
+.tag-agenda-hoje{background:var(--warn-soft);color:var(--warn)}
+.tag-agenda-atrasado{background:var(--bad-soft);color:var(--bad)}
+.alerta{color:var(--bad);font-weight:600}
+.btn-row-sm{display:flex;gap:6px;flex-wrap:wrap}
+
+/* ---------- Follow-up ---------- */
+.fu-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:16px}
+.fu-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:14px}
+.fu-card b{font-family:'Sora';font-size:22px;display:block}
+.fu-card span{font-size:12px;color:var(--ink-soft)}
+.fu-card-hoje{border-color:#F0D9A8;background:#FEFAF2}
+.fu-card-hoje b{color:var(--warn)}
+.fu-card-atraso{border-color:#F3CFCF;background:#FEF7F7}
+.fu-card-atraso b{color:var(--bad)}
+.fu-more{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;
+  font-size:12.5px;color:var(--ink-soft)}
+.fu-more[hidden]{display:none !important}
+.fu-list{display:flex;flex-direction:column;gap:8px}
+.fu-item{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}
+.fu-item[data-urg="alto"]{border-left-color:var(--bad)}
+.fu-item[data-urg="medio"]{border-left-color:var(--warn)}
+.fu-item[data-urg="ok"]{border-left-color:var(--ok)}
+.fu-main strong{font-size:14px}
+.fu-sub{font-size:12.5px;color:var(--ink-soft);margin-top:3px;display:flex;gap:10px;flex-wrap:wrap}
+.fu-actions{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+
+/* ---------- Importação ---------- */
+.drop{
+  display:flex;flex-direction:column;gap:2px;align-items:center;justify-content:center;
+  border:1.5px dashed var(--brand-soft);border-radius:var(--radius);padding:22px;background:var(--brand-softer);
+  cursor:pointer;text-align:center;
+}
+.drop:hover{border-color:var(--brand);background:#EDF5FE}
+.drop strong{font-size:14px;color:var(--brand-dark)}
+.drop span{font-size:12px;color:var(--ink-soft)}
+.drop-row{display:flex;gap:10px}
+.drop-sm{flex:1;padding:16px}
+.log{margin-top:12px;font-size:12.5px;color:var(--ink-soft);max-height:180px;overflow:auto;font-variant-numeric:tabular-nums}
+.log div{padding:3px 0;border-bottom:1px dashed var(--line)}
+.log div:last-child{border-bottom:0}
+.progress{height:6px;background:var(--brand-soft);border-radius:99px;overflow:hidden;margin-top:12px}
+.progress-bar{height:100%;width:0;background:var(--brand);transition:width .2s}
+.danger-zone{border-color:var(--bad-soft)}
+.steps{margin:0;padding-left:20px;font-size:13.5px;color:var(--ink-soft)}
+.steps li{margin-bottom:6px}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{display:inline-flex;align-items:center;gap:7px;background:var(--brand-soft);color:var(--brand-dark);border-radius:99px;padding:5px 11px;font-size:12.5px;font-weight:600}
+.chip button{border:0;background:none;color:inherit;opacity:.6;font-size:13px;padding:0}
+.chip button:hover{opacity:1}
+
+/* ---------- Drawer ---------- */
+.drawer-backdrop{position:fixed;inset:0;background:rgba(14,35,56,.35);z-index:60;backdrop-filter:blur(2px)}
+.drawer[hidden],.drawer-backdrop[hidden],.toast[hidden],.progress[hidden]{display:none !important}
+.drawer{
+  position:fixed;top:0;right:0;height:100vh;width:min(520px,100%);background:var(--surface);z-index:61;
+  display:flex;flex-direction:column;box-shadow:-10px 0 40px rgba(14,35,56,.16);animation:slide .22s ease;
+}
+@keyframes slide{from{transform:translateX(24px);opacity:.5}to{transform:none;opacity:1}}
+.drawer-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:18px 20px;border-bottom:1px solid var(--line)}
+.drawer-eyebrow{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--brand)}
+.drawer-head h2{font-size:18px;margin-top:3px}
+.drawer-body{padding:18px 20px 40px;overflow-y:auto}
+.dsection{margin-bottom:22px}
+.dsection h3{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink-soft);margin-bottom:10px}
+.dgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.dgrid .field{margin:0}
+.timeline{display:flex;flex-direction:column;gap:0}
+.tl-item{display:grid;grid-template-columns:auto 1fr;gap:10px;padding-bottom:14px;position:relative}
+.tl-dot{width:10px;height:10px;border-radius:99px;background:var(--brand);margin-top:5px}
+.tl-item:not(:last-child)::before{content:"";position:absolute;left:4.5px;top:16px;bottom:0;width:1px;background:var(--line)}
+.tl-body strong{font-size:13.5px}
+.tl-body p{margin:2px 0 0;font-size:13px;color:var(--ink-soft)}
+.tl-meta{font-size:11.5px;color:var(--ink-soft)}
+.quick-acts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+
+/* ---------- Toast ---------- */
+.toast{
+  position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:90;
+  background:var(--ink);color:#fff;padding:11px 18px;border-radius:99px;font-size:13.5px;font-weight:500;
+  box-shadow:0 10px 30px rgba(14,35,56,.25);animation:fade .2s ease;
+}
+
+/* ---------- Tabbar mobile ---------- */
+.tabbar{display:none}
+
+/* ---------- Responsivo ---------- */
+@media (max-width:1080px){
+  .grid-2{grid-template-columns:1fr}
+}
+@media (max-width:840px){
+  body{font-size:14.5px}
+  .sidebar{display:none}
+  .app{flex-direction:column}
+  .topbar{padding:14px 16px;flex-wrap:wrap;gap:10px}
+  h1{font-size:19px}
+  .views{padding:14px 14px 96px}
+  .topbar-actions{width:100%;justify-content:space-between}
+  .table-wrap{display:none}
+  .cards-mobile{display:flex;flex-direction:column;gap:9px}
+  .kanban{grid-auto-columns:80vw}
+  .chart-box{height:250px}
+  .funnel-row{grid-template-columns:104px 1fr;grid-template-areas:"name track" "name value";row-gap:2px}
+  .funnel-name{grid-area:name}
+  .funnel-track{grid-area:track}
+  .funnel-value{grid-area:value;font-size:12px;color:var(--ink-soft)}
+  .fu-item{grid-template-columns:1fr}
+  .fu-actions{justify-content:flex-start}
+  .drop-row{flex-direction:column}
+  .drawer{width:100%;height:92vh;top:auto;bottom:0;border-radius:18px 18px 0 0;animation:up .22s ease}
+  @keyframes up{from{transform:translateY(30px)}to{transform:none}}
+  .tabbar{
+    display:grid;grid-template-columns:repeat(5,1fr);position:fixed;bottom:0;left:0;right:0;z-index:50;
+    background:var(--surface);border-top:1px solid var(--line);padding:6px 4px calc(6px + env(safe-area-inset-bottom));
+  }
+  .tab{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:10.5px;color:var(--ink-soft);padding:6px 2px;border-radius:10px;font-weight:600}
+  .tab span{font-size:16px}
+  .tab.is-active{color:var(--brand);background:var(--brand-softer)}
+  .toast{bottom:78px}
+}
+.input-inline{width:auto;min-width:140px}
+.aviso-vazio{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;
+  background:var(--warn-soft);border:1px solid #F0D9A8;border-radius:var(--radius);padding:14px 16px;margin-bottom:16px}
+.aviso-vazio strong{display:block;font-size:14px;color:var(--ink)}
+.aviso-vazio span{font-size:12.5px;color:var(--ink-soft)}
+.aviso-vazio[hidden]{display:none !important}
+.chart-empty{display:flex;align-items:center;justify-content:center;height:100%;margin:0;
+  font-size:13px;color:var(--ink-soft);text-align:center}
+.chart-empty[hidden]{display:none !important}
+
+/* ---------- Relatório semanal ---------- */
+.report{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px 24px}
+.report-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;
+  border-bottom:2px solid var(--brand);padding-bottom:12px;margin-bottom:18px;flex-wrap:wrap}
+.report-head h2{font-family:'Sora';font-size:20px;margin:0}
+.report-head p{margin:3px 0 0;font-size:13px;color:var(--ink-soft)}
+.report-brand{text-align:right;font-size:12px;color:var(--ink-soft)}
+.report-brand strong{display:block;color:var(--brand-dark);font-size:13px}
+.report-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:20px}
+.report-kpi{border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;background:var(--brand-softer)}
+.report-kpi span{font-size:12px;color:var(--ink-soft);display:block}
+.report-kpi b{font-family:'Sora';font-size:24px;display:block;line-height:1.2}
+.report-kpi small{font-size:12.5px;color:var(--brand-dark);font-weight:600}
+.report-section{margin-bottom:18px;break-inside:avoid}
+.report-section h3{font-size:14px;margin:0 0 8px;color:var(--brand-dark);
+  border-bottom:1px solid var(--line);padding-bottom:5px}
+.report-count{display:inline-block;background:var(--brand-soft);color:var(--brand-dark);
+  border-radius:99px;font-size:11.5px;padding:1px 8px;margin-left:5px}
+.report-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.report-list li{display:grid;grid-template-columns:minmax(120px,1.1fr) 2fr auto;gap:10px;align-items:baseline;
+  font-size:13px;padding:5px 0;border-bottom:1px dashed var(--line)}
+.rl-cli{font-weight:600}
+.rl-meta{color:var(--ink-soft);font-size:12px}
+.rl-val{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.report-empty,.report-note{font-size:12.5px;color:var(--ink-soft);margin:2px 0 0}
+.table-report{font-size:13px}
+
+@media print{
+  @page{size:A4;margin:12mm}
+  body{background:#fff}
+  .sidebar,.tabbar,.topbar,.no-print,.toast,.drawer,.drawer-backdrop{display:none !important}
+  .app,.main,.views{display:block;padding:0;margin:0}
+  .view{display:none}
+  .view.is-active{display:block}
+  .report{border:0;padding:0}
+  .report-kpi{background:#fff}
+  .report-list li{break-inside:avoid}
+  a[href]:after{content:''}
+}
+
+@media (prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important}
+}
+
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ============ NAVEGAÇÃO ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">SE</div>
+      <div class="brand-text">
+        <strong>Gestão Comercial</strong>
+        <span>Sammour Engenharia</span>
+      </div>
+    </div>
+    <nav class="nav" id="nav-desktop">
+      <button class="nav-item is-active" data-view="painel"><span class="nav-ico">▤</span>Painel</button>
+      <button class="nav-item" data-view="funil"><span class="nav-ico">⛃</span>Funil</button>
+      <button class="nav-item" data-view="propostas"><span class="nav-ico">☰</span>Propostas</button>
+      <button class="nav-item" data-view="followup"><span class="nav-ico">◷</span>Follow-up</button>
+      <button class="nav-item" data-view="equipe"><span class="nav-ico">◕</span>Equipe</button>
+      <button class="nav-item" data-view="relatorio"><span class="nav-ico">▦</span>Relatório</button>
+      <button class="nav-item" data-view="dados"><span class="nav-ico">⇪</span>Importar</button>
+      <button class="nav-item" data-view="config"><span class="nav-ico">⚙</span>Ajustes</button>
+    </nav>
+    <div class="sidebar-foot">
+      <button class="btn btn-primary btn-block" id="btn-nova-proposta">+ Nova proposta</button>
+      <p class="hint" id="storage-hint">Dados salvos neste dispositivo</p>
+    </div>
+  </aside>
+
+  <!-- ============ CONTEÚDO ============ -->
+  <main class="main">
+    <header class="topbar">
+      <div>
+        <h1 id="view-title">Painel</h1>
+        <p class="subtitle" id="view-subtitle">Visão geral do comercial</p>
+      </div>
+      <div class="topbar-actions">
+        <div class="period-select">
+          <select id="filtro-periodo" aria-label="Período"></select>
+        </div>
+        <button class="btn btn-ghost" id="btn-nova-proposta-top">+ Proposta</button>
+      </div>
+    </header>
+
+    <div class="views">
+
+      <div class="aviso-vazio no-print" id="aviso-base-vazia" hidden>
+        <div>
+          <strong>Esta base está vazia neste navegador.</strong>
+          <span>Os dados ficam no aparelho, não em um servidor. Importe a planilha ou restaure um backup .json para ver os indicadores, os anos no filtro de período e os gráficos.</span>
+        </div>
+        <button class="btn btn-primary btn-sm" data-view="dados">Ir para Importar</button>
+      </div>
+
+      <!-- ---------- PAINEL ---------- -->
+      <section class="view is-active" id="view-painel">
+        <div class="kpi-grid" id="kpis"></div>
+
+        <div class="panel panel-funnel">
+          <div class="panel-head">
+            <h2>Funil de vendas</h2>
+            <span class="panel-note" id="funnel-note"></span>
+          </div>
+          <div class="funnel" id="funnel-bars"></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head"><h2>Propostas e valor fechado por mês</h2></div>
+            <div class="chart-box"><canvas id="ch-mes"></canvas></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Qualidade das propostas</h2></div>
+            <div class="chart-box chart-sm"><canvas id="ch-classificacao"></canvas></div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head">
+              <h2 id="ch-estado-titulo">Valor cotado por estado (top 8)</h2>
+              <select id="ch-estado-modo" class="input input-sm input-inline" aria-label="Base do gráfico por estado">
+                <option value="cotado">Valor cotado</option>
+                <option value="fechado">Valor fechado</option>
+              </select>
+            </div>
+            <div class="chart-box">
+              <canvas id="ch-estado"></canvas>
+              <p class="chart-empty" id="ch-estado-vazio" hidden></p>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Serviços mais cotados</h2></div>
+            <div class="chart-box"><canvas id="ch-servico"></canvas></div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head"><h2>Maiores oportunidades abertas</h2></div>
+            <div class="mini-list" id="top-oportunidades"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Clientes que mais compraram</h2></div>
+            <div class="mini-list" id="top-clientes"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- FUNIL ---------- -->
+      <section class="view" id="view-funil">
+        <div class="toolbar">
+          <input type="search" id="busca-funil" class="input" placeholder="Buscar cliente, contrato, cidade..." />
+          <select id="funil-vendedor" class="input input-sm"><option value="">Todos os vendedores</option></select>
+        </div>
+        <div class="kanban" id="kanban"></div>
+      </section>
+
+      <!-- ---------- PROPOSTAS ---------- -->
+      <section class="view" id="view-propostas">
+        <div class="toolbar toolbar-wrap">
+          <input type="search" id="busca" class="input" placeholder="Buscar cliente, contrato, contato, cidade..." />
+          <select id="f-status" class="input input-sm"><option value="">Status: todos</option></select>
+          <select id="f-classificacao" class="input input-sm">
+            <option value="">Classificação: todas</option>
+            <option value="Boa">Boa</option><option value="Regular">Regular</option><option value="Ruim">Ruim</option>
+          </select>
+          <select id="f-estado" class="input input-sm"><option value="">UF: todas</option></select>
+          <select id="f-vendedor" class="input input-sm"><option value="">Vendedor: todos</option></select>
+          <button class="btn btn-ghost btn-sm" id="btn-exportar-csv">Exportar CSV</button>
+        </div>
+        <p class="result-count" id="contador-propostas"></p>
+        <div class="bulk-bar" id="bulk-bar" hidden>
+          <strong id="bulk-count"></strong>
+          <select id="bulk-status" class="input input-sm"></select>
+          <select id="bulk-motivo" class="input input-sm" hidden aria-label="Motivo da perda"></select>
+          <button class="btn btn-primary btn-sm" id="bulk-aplicar">Aplicar status</button>
+          <button class="btn btn-ghost btn-sm" id="bulk-limpar">Limpar seleção</button>
+          <button class="btn btn-danger btn-sm bulk-danger" id="bulk-excluir">Excluir selecionadas</button>
+        </div>
+        <div class="table-wrap">
+          <table class="table" id="tabela-propostas">
+            <thead>
+              <tr>
+                <th class="sel"><input type="checkbox" id="sel-todas" aria-label="Selecionar todas" /></th>
+                <th data-sort="contrato">Contrato</th>
+                <th data-sort="cliente">Cliente</th>
+                <th data-sort="cidade">Cidade/UF</th>
+                <th data-sort="servico">Serviço</th>
+                <th data-sort="valor" class="num">Valor</th>
+                <th data-sort="classificacao">Classificação</th>
+                <th data-sort="status">Status</th>
+                <th data-sort="diasEtapa" class="num">Na etapa</th>
+                <th data-sort="ultimoContato">Último contato</th>
+              </tr>
+            </thead>
+            <tbody id="tbody-propostas"></tbody>
+          </table>
+        </div>
+        <div class="cards-mobile" id="cards-propostas"></div>
+      </section>
+
+      <!-- ---------- FOLLOW-UP ---------- -->
+      <section class="view" id="view-followup">
+        <div class="toolbar toolbar-wrap">
+          <select id="fu-vendedor" class="input input-sm"><option value="">Todos os vendedores</option></select>
+          <select id="fu-ordem" class="input input-sm">
+            <option value="agenda">Agenda: próximo contato</option>
+            <option value="dias">Mais tempo sem contato</option>
+            <option value="valor">Maior valor</option>
+          </select>
+          <label class="check"><input type="checkbox" id="fu-somente-agenda" /> Somente com data marcada</label>
+          <label class="check"><input type="checkbox" id="fu-somente-abertas" checked /> Somente propostas abertas</label>
+        </div>
+        <div class="fu-summary" id="fu-summary"></div>
+        <div class="fu-list" id="fu-list"></div>
+        <div class="fu-more" id="fu-more" hidden>
+          <span id="fu-more-text"></span>
+          <button class="btn btn-ghost btn-sm" id="fu-more-btn">Mostrar mais</button>
+        </div>
+      </section>
+
+      <!-- ---------- EQUIPE ---------- -->
+      <section class="view" id="view-equipe">
+        <div class="toolbar">
+          <select id="eq-janela" class="input input-sm">
+            <option value="7">Últimos 7 dias</option>
+            <option value="30" selected>Últimos 30 dias</option>
+            <option value="90">Últimos 90 dias</option>
+          </select>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Atividades por vendedor</h2></div>
+          <div class="chart-box"><canvas id="ch-equipe"></canvas></div>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr><th>Vendedor</th><th class="num">Propostas</th><th class="num">Ligações</th><th class="num">Reuniões</th><th class="num">Outros contatos</th><th class="num">Sem contato +15d</th><th class="num">Fechado (R$)</th></tr>
+            </thead>
+            <tbody id="tbody-equipe"></tbody>
+          </table>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><h2>Últimas atividades registradas</h2></div>
+          <div class="mini-list" id="ultimas-atividades"></div>
+        </div>
+      </section>
+
+      <!-- ---------- RELATÓRIO ---------- -->
+      <section class="view" id="view-relatorio">
+        <div class="toolbar toolbar-wrap no-print">
+          <select id="rel-semana" class="input input-sm"></select>
+          <select id="rel-vendedor" class="input input-sm"><option value="">Todos os vendedores</option></select>
+          <button class="btn btn-primary btn-sm" id="rel-imprimir">Imprimir / salvar PDF</button>
+        </div>
+        <div class="report" id="rel-corpo"></div>
+      </section>
+
+      <!-- ---------- IMPORTAR ---------- -->
+      <section class="view" id="view-dados">
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head"><h2>1. Importar a planilha atual</h2></div>
+            <p class="panel-text">Carrega a aba <strong>PROPOSTAS</strong> do arquivo .xlsm/.xlsx e converte cada linha em uma proposta do app.</p>
+            <label class="drop" for="in-xlsx">
+              <strong>Escolher planilha</strong>
+              <span>.xlsm ou .xlsx</span>
+              <input type="file" id="in-xlsx" accept=".xlsx,.xlsm" hidden />
+            </label>
+            <div class="log" id="log-xlsx"></div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h2>2. Ler PDFs das propostas</h2></div>
+            <p class="panel-text">Lê os PDFs no próprio navegador e preenche contrato, CNPJ, contato, telefone, e-mail e obra. No computador, use “pasta de propostas” para aproveitar também o nome das pastas (cliente, cidade e serviço).</p>
+            <label class="field"><span>Padrão do nome do arquivo</span>
+              <input type="text" id="pdf-padrao" class="input" value="Proposta - DDMMAA - Número - CLIENTE - SERVIÇO" readonly />
+            </label>
+            <p class="panel-text">Propostas novas entram como <strong>Nova</strong>. Depois, em Propostas, selecione as que já foram enviadas ao cliente e use “Aplicar status → Enviada” para mover várias de uma vez. Em cada pasta o app usa só o PDF da proposta e, quando há revisões (<code>… - Rev.01</code>), lê a mais recente. As revisões continuam sendo a mesma proposta, então o total do ano não infla. Anexos como ART, contrato e memorial são ignorados.</p>
+            <div class="drop-row">
+              <label class="drop drop-sm" for="in-pdfs">
+                <strong>PDFs avulsos</strong><span>funciona no celular</span>
+                <input type="file" id="in-pdfs" accept="application/pdf" multiple hidden />
+              </label>
+              <label class="drop drop-sm" for="in-pasta">
+                <strong>Pasta de propostas</strong><span>só no computador</span>
+                <input type="file" id="in-pasta" webkitdirectory directory multiple hidden />
+              </label>
+            </div>
+            <div class="progress" id="pdf-progress" hidden><div class="progress-bar" id="pdf-progress-bar"></div></div>
+            <div class="log" id="log-pdf"></div>
+          </div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head"><h2>Backup e restauração</h2></div>
+            <p class="panel-text">O app guarda tudo no navegador deste dispositivo. Exporte o backup para levar os dados para outro celular ou computador — e para compartilhar com a equipe.</p>
+            <div class="btn-row">
+              <button class="btn btn-primary" id="btn-backup">Exportar backup (.json)</button>
+              <label class="btn btn-ghost" for="in-json">Restaurar backup
+                <input type="file" id="in-json" accept="application/json" hidden />
+              </label>
+              <button class="btn btn-ghost" id="btn-exportar-xlsx">Exportar para Excel</button>
+            </div>
+            <div class="log" id="log-backup"></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Importar JSON do extrator Python</h2></div>
+            <p class="panel-text">Se você rodar o extrator em lote (pasta <code>extrator/</code>), ele gera um arquivo <code>propostas.json</code>. Carregue-o aqui para atualizar centenas de propostas de uma vez.</p>
+            <label class="btn btn-ghost" for="in-json-extrator">Carregar propostas.json
+              <input type="file" id="in-json-extrator" accept="application/json" hidden />
+            </label>
+            <div class="log" id="log-extrator"></div>
+          </div>
+        </div>
+
+        <div class="panel danger-zone">
+          <div class="panel-head"><h2>Limpar base</h2></div>
+          <p class="panel-text">Remove todas as propostas e atividades deste dispositivo. Exporte um backup antes.</p>
+          <button class="btn btn-danger" id="btn-limpar">Apagar todos os dados</button>
+        </div>
+      </section>
+
+      <!-- ---------- AJUSTES ---------- -->
+      <section class="view" id="view-config">
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-head"><h2>Metas</h2></div>
+            <label class="field"><span>Meta de propostas por mês</span><input type="number" id="cfg-meta-propostas" class="input" min="0" /></label>
+            <label class="field"><span>Meta de valor fechado por mês (R$)</span><input type="text" inputmode="decimal" id="cfg-meta-valor" class="input" placeholder="500.000" /></label>
+            <label class="field"><span>Alerta de follow-up: dias sem contato</span><input type="number" id="cfg-dias-followup" class="input" min="1" /></label>
+            <button class="btn btn-primary" id="btn-salvar-config">Salvar ajustes</button>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><h2>Equipe comercial</h2></div>
+            <p class="panel-text">Quem aparece nos filtros e no acompanhamento por vendedor.</p>
+            <div class="chips" id="lista-vendedores"></div>
+            <div class="btn-row">
+              <input type="text" id="novo-vendedor" class="input" placeholder="Nome do vendedor" />
+              <button class="btn btn-ghost" id="btn-add-vendedor">Adicionar</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ============ NAV MOBILE ============ -->
+  <nav class="tabbar" id="nav-mobile">
+    <button class="tab is-active" data-view="painel"><span>▤</span>Painel</button>
+    <button class="tab" data-view="funil"><span>⛃</span>Funil</button>
+    <button class="tab" data-view="propostas"><span>☰</span>Propostas</button>
+    <button class="tab" data-view="followup"><span>◷</span>Follow-up</button>
+    <button class="tab" data-view="dados"><span>⇪</span>Dados</button>
+  </nav>
+</div>
+
+<!-- ============ DETALHE / EDIÇÃO ============ -->
+<div class="drawer-backdrop" id="drawer-backdrop" hidden></div>
+<aside class="drawer" id="drawer" hidden aria-label="Detalhe da proposta">
+  <header class="drawer-head">
+    <div>
+      <span class="drawer-eyebrow" id="drawer-contrato"></span>
+      <h2 id="drawer-cliente"></h2>
+    </div>
+    <button class="icon-btn" id="drawer-close" aria-label="Fechar">✕</button>
+  </header>
+  <div class="drawer-body" id="drawer-body"></div>
+</aside>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
+<script defer>
+/* ===========================================================
+   store.js — estado, persistência e regras de negócio
+   =========================================================== */
+(function () {
+  'use strict';
+
+  var CHAVE = 'sammour_gestao_comercial_v1';
+
+  var STATUS = ['Nova', 'Enviada', 'Em negociação', 'Aguardando retorno', 'Fechada', 'Perdida'];
+  var STATUS_ABERTOS = ['Nova', 'Enviada', 'Em negociação', 'Aguardando retorno'];
+  var CLASSIFICACOES = ['Boa', 'Regular', 'Ruim'];
+  var TIPOS_ATIVIDADE = ['Ligação', 'Reunião', 'E-mail', 'WhatsApp', 'Visita', 'Outro'];
+  var SERVICOS = [
+    'PIT', 'PDA', 'PCE CONVENCIONAL', 'PCE HELICOIDAL', 'PLACA',
+    'PROJETO DE FUNDAÇÕES', 'PROJETO DE CONTENÇÕES', 'CONSULTORIA', 'ATP'
+  ];
+  var MOTIVOS_PERDA = ['Preço', 'Prazo', 'Concorrente', 'Obra cancelada', 'Sem retorno', 'Outro'];
+  /* termos antigos que ainda aparecem na base importada da planilha */
+  var SERVICOS_LEGADO = ['PCE', 'PROJETO', 'PCT'];
+
+  var padrao = {
+    propostas: [],
+    vendedores: ['Comercial 1', 'Comercial 2'],
+    config: { metaPropostas: 60, metaValor: 500000, diasFollowup: 15 },
+    versao: 1
+  };
+
+  /* ---------- persistência (com fallback em memória) ---------- */
+  var memoria = null;
+  var localOk = true;
+  try {
+    window.localStorage.setItem('__t', '1');
+    window.localStorage.removeItem('__t');
+  } catch (e) { localOk = false; }
+
+  function carregar() {
+    if (!localOk) return memoria ? clonar(memoria) : clonar(padrao);
+    try {
+      var bruto = window.localStorage.getItem(CHAVE);
+      if (!bruto) return clonar(padrao);
+      var dados = JSON.parse(bruto);
+      dados.propostas = dados.propostas || [];
+      dados.vendedores = dados.vendedores || [];
+      dados.config = Object.assign({}, padrao.config, dados.config || {});
+      dados.propostas.forEach(function (p) {
+        if (!p.historicoStatus || !p.historicoStatus.length) {
+          p.historicoStatus = [{ status: p.status || 'Nova', data: p.dataProposta || hojeISO() }];
+        }
+        if (p.revisao == null) p.revisao = 0;
+      });
+      return dados;
+    } catch (e) {
+      console.warn('Falha ao ler os dados salvos:', e);
+      return clonar(padrao);
+    }
+  }
+
+  function salvar() {
+    if (!localOk) { memoria = clonar(estado); return true; }
+    try {
+      window.localStorage.setItem(CHAVE, JSON.stringify(estado));
+      return true;
+    } catch (e) {
+      console.warn('Falha ao salvar:', e);
+      return false;
+    }
+  }
+
+  function clonar(o) { return JSON.parse(JSON.stringify(o)); }
+
+  var estado = carregar();
+
+  /* ---------- utilidades ---------- */
+  function id() {
+    return 'p' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  }
+
+  function normalizar(t) {
+    return (t == null ? '' : String(t)).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim();
+  }
+
+  function numero(v) {
+    if (typeof v === 'number') return isFinite(v) ? v : 0;
+    if (v == null) return 0;
+    var s = String(v).replace(/[^\d,.-]/g, '');
+    if (!s) return 0;
+    if (s.indexOf(',') > -1) {
+      // 1.250.000,50 -> o ponto é separador de milhar
+      s = s.replace(/\./g, '').replace(',', '.');
+    } else if (/^-?\d{1,3}(\.\d{3})+$/.test(s)) {
+      // 1.250.000 (grupos exatos de 3) -> milhar, não decimal
+      s = s.replace(/\./g, '');
+    }
+    var n = parseFloat(s);
+    return isFinite(n) ? n : 0;
+  }
+
+  function moeda(v) {
+    return (numero(v)).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+  }
+
+  /** Valor formatado para reexibir no campo: 1250000 -> "1.250.000"; 1250000.5 -> "1.250.000,50". */
+  function valorCampo(v) {
+    var n = numero(v);
+    if (!n) return '';
+    var temCentavos = Math.round(n * 100) % 100 !== 0;
+    return n.toLocaleString('pt-BR', {
+      minimumFractionDigits: temCentavos ? 2 : 0,
+      maximumFractionDigits: 2
+    });
+  }
+
+  function moedaCurta(v) {
+    var n = numero(v);
+    if (Math.abs(n) >= 1e6) return 'R$ ' + (n / 1e6).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + ' mi';
+    if (Math.abs(n) >= 1e3) return 'R$ ' + (n / 1e3).toLocaleString('pt-BR', { maximumFractionDigits: 0 }) + ' mil';
+    return moeda(n);
+  }
+
+  function dataBR(iso) {
+    if (!iso) return '—';
+    var d = new Date(iso);
+    if (isNaN(d)) return '—';
+    return d.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+  }
+
+  function hojeISO() {
+    var d = new Date();
+    return d.getFullYear() + '-' + doisDig(d.getMonth() + 1) + '-' + doisDig(d.getDate());
+  }
+
+  function agoraHora() {
+    var d = new Date();
+    return doisDig(d.getHours()) + ':' + doisDig(d.getMinutes());
+  }
+
+  function doisDig(n) { return (n < 10 ? '0' : '') + n; }
+
+  /** "14/03/26 · 09:30" — a hora só aparece quando existe. */
+  function dataHoraBR(iso, hora) {
+    var base = dataBR(iso);
+    if (!hora) return base;
+    return base + ' · ' + hora;
+  }
+
+  /** Chave para ordenar atividades por data e hora (registros antigos vão para o fim do dia). */
+  function chaveMomento(a) {
+    if (!a) return '';
+    return (a.data || '') + 'T' + (a.hora || '23:59');
+  }
+
+  function diasDesde(iso) {
+    if (!iso) return null;
+    var d = new Date(iso);
+    if (isNaN(d)) return null;
+    return Math.floor((Date.now() - d.getTime()) / 86400000);
+  }
+
+  /** Deriva a data a partir do código do contrato (ddmmaa-nnn). */
+  function dataDoContrato(contrato) {
+    var m = /^(\d{2})(\d{2})(\d{2})-(\d{3})$/.exec(String(contrato || '').trim());
+    if (!m) return '';
+    var dia = +m[1], mes = +m[2], ano = 2000 + +m[3];
+    if (mes < 1 || mes > 12 || dia < 1 || dia > 31) return '';
+    return ano + '-' + String(mes).padStart(2, '0') + '-' + String(dia).padStart(2, '0');
+  }
+
+  /** "JAN - SEM 03" -> {mes:1, semana:3} */
+  function lerSemana(txt) {
+    var meses = { JAN: 1, FEV: 2, MAR: 3, ABR: 4, MAI: 5, JUN: 6, JUL: 7, AGO: 8, SET: 9, OUT: 10, NOV: 11, DEZ: 12 };
+    var m = /([A-ZÇ]{3})\s*-\s*SEM\s*(\d+)/i.exec(String(txt || '').toUpperCase());
+    if (!m) return null;
+    return { mes: meses[m[1]] || null, semana: +m[2] };
+  }
+
+  /* ---------- modelo ---------- */
+  function novaProposta(dados) {
+    var p = Object.assign({
+      id: id(),
+      contrato: '',
+      cliente: '',
+      cnpj: '',
+      contato: '',
+      telefone: '',
+      email: '',
+      cidade: '',
+      estado: '',
+      servico: '',
+      descricao: '',
+      obra: '',
+      valor: 0,
+      revisao: 0,
+      arquivo: '',
+      status: 'Nova',
+      classificacao: 'Regular',
+      tipoCliente: 'NOVO',
+      vendedor: '',
+      dataProposta: '',
+      semanaConsulta: '',
+      observacoes: '',
+      proximoContato: '',
+      motivoPerda: '',
+      atividades: [],
+      historicoStatus: [],
+      criadoEm: new Date().toISOString(),
+      atualizadoEm: new Date().toISOString()
+    }, dados || {});
+    if (!p.dataProposta) p.dataProposta = dataDoContrato(p.contrato) || hojeISO();
+    if (!p.historicoStatus || !p.historicoStatus.length) {
+      p.historicoStatus = [{ status: p.status, data: p.dataProposta || hojeISO() }];
+    }
+    return p;
+  }
+
+  /** Devolve a atividade mais recente (data + hora), ou null. */
+  function ultimaAtividade(p) {
+    var lista = (p.atividades || []).filter(function (a) { return a && a.data; });
+    if (!lista.length) return null;
+    return lista.slice().sort(function (a, b) {
+      return chaveMomento(a).localeCompare(chaveMomento(b));
+    })[lista.length - 1];
+  }
+
+  function ultimoContato(p) {
+    var a = ultimaAtividade(p);
+    return a ? a.data : null;
+  }
+
+  function diasSemContato(p) {
+    var ref = ultimoContato(p) || p.dataProposta;
+    return diasDesde(ref);
+  }
+
+  function entradaNaEtapa(p) {
+    var hist = (p.historicoStatus || []).filter(function (h) { return h.status === p.status; });
+    if (hist.length) return hist[hist.length - 1].data;
+    return p.dataProposta || null;
+  }
+
+  function diasNaEtapa(p) {
+    return diasDesde(entradaNaEtapa(p));
+  }
+
+  function urgencia(p) {
+    if (!STATUS_ABERTOS.includes(p.status)) return 'ok';
+    var d = diasSemContato(p);
+    var limite = estado.config.diasFollowup || 15;
+    if (d == null) return 'medio';
+    if (d >= limite * 2) return 'alto';
+    if (d >= limite) return 'medio';
+    return 'ok';
+  }
+
+  /** Dias até o próximo contato agendado: 0 = hoje, negativo = atrasado, null = sem agenda. */
+  function diasParaProximo(p) {
+    if (!p.proximoContato) return null;
+    var d = diasDesde(p.proximoContato);
+    return d == null ? null : -d;
+  }
+
+  function agendaStatus(p) {
+    var d = diasParaProximo(p);
+    if (d == null) return 'sem';
+    if (d < 0) return 'atrasado';
+    if (d === 0) return 'hoje';
+    if (d <= 7) return 'semana';
+    return 'futuro';
+  }
+
+  function contarAtividades(p, tipo) {
+    return (p.atividades || []).filter(function (a) { return a.tipo === tipo; }).length;
+  }
+
+  /* ---------- operações ---------- */
+  function adicionar(p) {
+    estado.propostas.push(novaProposta(p));
+    salvar();
+  }
+
+  function anotarEtapa(p, novoStatus) {
+    if (!novoStatus || novoStatus === p.status) return;
+    p.historicoStatus = p.historicoStatus || [];
+    p.historicoStatus.push({ status: novoStatus, data: hojeISO() });
+  }
+
+  function atualizar(idProposta, campos) {
+    var p = estado.propostas.find(function (x) { return x.id === idProposta; });
+    if (!p) return null;
+    if (campos && campos.status) anotarEtapa(p, campos.status);
+    Object.assign(p, campos, { atualizadoEm: new Date().toISOString() });
+    if (p.status !== 'Perdida') p.motivoPerda = '';
+    /* proposta encerrada não fica pendurada na agenda */
+    if (p.status === 'Fechada' || p.status === 'Perdida') p.proximoContato = '';
+    salvar();
+    return p;
+  }
+
+  function remover(idProposta) {
+    estado.propostas = estado.propostas.filter(function (x) { return x.id !== idProposta; });
+    salvar();
+  }
+
+  /** Remove várias de uma vez, gravando uma única vez. */
+  function removerVarios(ids) {
+    var alvo = (ids || []).slice();
+    if (!alvo.length) return 0;
+    var antes = estado.propostas.length;
+    estado.propostas = estado.propostas.filter(function (x) { return alvo.indexOf(x.id) === -1; });
+    salvar();
+    return antes - estado.propostas.length;
+  }
+
+  function registrarAtividade(idProposta, atividade) {
+    var p = estado.propostas.find(function (x) { return x.id === idProposta; });
+    if (!p) return null;
+    p.atividades = p.atividades || [];
+    p.atividades.push(Object.assign({
+      id: id(), tipo: 'Ligação', data: hojeISO(), hora: agoraHora(),
+      responsavel: p.vendedor || '', obs: ''
+    }, atividade || {}));
+    var lancada = p.atividades[p.atividades.length - 1];
+    /* o follow-up agendado foi cumprido: sai da agenda, salvo se um novo for marcado na hora */
+    if (p.proximoContato && p.proximoContato <= (lancada.data || hojeISO())) p.proximoContato = '';
+    p.atualizadoEm = new Date().toISOString();
+    salvar();
+    return p;
+  }
+
+  function removerAtividade(idProposta, idAtividade) {
+    var p = estado.propostas.find(function (x) { return x.id === idProposta; });
+    if (!p) return;
+    p.atividades = (p.atividades || []).filter(function (a) { return a.id !== idAtividade; });
+    salvar();
+  }
+
+  /** Junta propostas importadas com as existentes usando o contrato como chave. */
+  function mesclar(lista, opcoes) {
+    opcoes = opcoes || {};
+    var novos = 0, atualizados = 0;
+    lista.forEach(function (item) {
+      var chave = String(item.contrato || '').trim();
+      var existente = chave ? estado.propostas.find(function (p) {
+        return String(p.contrato || '').trim() === chave;
+      }) : null;
+
+      if (existente) {
+        if (item.status && !(opcoes.preservarEdicoes)) anotarEtapa(existente, item.status);
+        Object.keys(item).forEach(function (k) {
+          if (k === 'id' || k === 'atividades' || k === 'criadoEm') return;
+          var v = item[k];
+          var vazio = v === '' || v == null || (k === 'valor' && !v);
+          if (vazio) return;
+          if (opcoes.preservarEdicoes &&
+              ['status', 'classificacao', 'vendedor', 'observacoes', 'proximoContato', 'motivoPerda'].includes(k)) return;
+          existente[k] = v;
+        });
+        existente.atualizadoEm = new Date().toISOString();
+        atualizados++;
+      } else {
+        estado.propostas.push(novaProposta(item));
+        novos++;
+      }
+    });
+    salvar();
+    return { novos: novos, atualizados: atualizados };
+  }
+
+  function substituirTudo(dados) {
+    estado = Object.assign(clonar(padrao), dados || {});
+    estado.propostas = (estado.propostas || []).map(function (p) { return novaProposta(p); });
+    salvar();
+  }
+
+  function limpar() {
+    estado = clonar(padrao);
+    estado.propostas = [];
+    salvar();
+  }
+
+  /* ---------- agregações ---------- */
+  function filtrar(filtros) {
+    filtros = filtros || {};
+    var termo = normalizar(filtros.busca || '');
+    var corte = null, teto = null;
+    var periodo = String(filtros.periodo || 'tudo');
+    var anoEscolhido = /^ano:(\d{4})$/.exec(periodo);
+    if (/^\d+$/.test(periodo)) {
+      corte = somaISO(hojeISO(), -parseInt(periodo, 10));
+    } else if (anoEscolhido) {
+      corte = anoEscolhido[1] + '-01-01';
+      teto = anoEscolhido[1] + '-12-31';
+    } else if (periodo === 'ano') {           // compatibilidade com backups antigos
+      corte = new Date().getFullYear() + '-01-01';
+    }
+
+    return estado.propostas.filter(function (p) {
+      if (filtros.status && p.status !== filtros.status) return false;
+      if (filtros.classificacao && p.classificacao !== filtros.classificacao) return false;
+      if (filtros.estado && p.estado !== filtros.estado) return false;
+      if (filtros.vendedor && p.vendedor !== filtros.vendedor) return false;
+      if (filtros.somenteAbertas && !STATUS_ABERTOS.includes(p.status)) return false;
+      if (anoEscolhido) {
+        if (anoDaProposta(p) !== anoEscolhido[1]) return false;
+      } else {
+        if (corte && (p.dataProposta || '') < corte) return false;
+        if (teto && (p.dataProposta || '') > teto) return false;
+      }
+      if (termo) {
+        var alvo = normalizar([p.cliente, p.contrato, p.contato, p.cidade, p.estado, p.servico, p.obra, p.email].join(' '));
+        if (alvo.indexOf(termo) === -1) return false;
+      }
+      return true;
+    });
+  }
+
+  function resumo(lista) {
+    var total = lista.length;
+    var abertas = lista.filter(function (p) { return STATUS_ABERTOS.includes(p.status); });
+    var fechadas = lista.filter(function (p) { return p.status === 'Fechada'; });
+    var perdidas = lista.filter(function (p) { return p.status === 'Perdida'; });
+    var soma = function (arr) { return arr.reduce(function (s, p) { return s + numero(p.valor); }, 0); };
+    var decididas = fechadas.length + perdidas.length;
+    return {
+      total: total,
+      abertas: abertas.length,
+      fechadas: fechadas.length,
+      perdidas: perdidas.length,
+      valorTotal: soma(lista),
+      valorAberto: soma(abertas),
+      valorFechado: soma(fechadas),
+      ticketMedio: fechadas.length ? soma(fechadas) / fechadas.length : 0,
+      conversao: total ? (fechadas.length / total) * 100 : 0,
+      taxaGanho: decididas ? (fechadas.length / decididas) * 100 : 0,
+      decididas: decididas,
+      atrasadas: abertas.filter(function (p) { return urgencia(p) !== 'ok'; }).length,
+      boas: lista.filter(function (p) { return p.classificacao === 'Boa'; }).length,
+      regulares: lista.filter(function (p) { return p.classificacao === 'Regular'; }).length,
+      ruins: lista.filter(function (p) { return p.classificacao === 'Ruim'; }).length
+    };
+  }
+
+  /** Anos com propostas na base, do mais recente para o mais antigo. */
+  function anosComPropostas() {
+    var anos = {};
+    estado.propostas.forEach(function (p) {
+      var a = anoDaProposta(p);
+      if (a) anos[a] = (anos[a] || 0) + 1;
+    });
+    return Object.keys(anos).sort().reverse().map(function (a) { return { ano: a, qtd: anos[a] }; });
+  }
+
+  /** Ano da proposta: data preenchida, senão o número do contrato, senão quando entrou no app. */
+  function anoDaProposta(p) {
+    var candidatos = [p.dataProposta, dataDoContrato(p.contrato), p.dataFechamento, p.criadoEm];
+    for (var i = 0; i < candidatos.length; i++) {
+      var a = String(candidatos[i] || '').slice(0, 4);
+      if (/^(19|20)\d{2}$/.test(a)) return a;
+    }
+    return '';
+  }
+
+  function agruparPor(lista, chave) {
+    var mapa = {};
+    lista.forEach(function (p) {
+      var k = (typeof chave === 'function' ? chave(p) : p[chave]) || '—';
+      if (!mapa[k]) mapa[k] = { chave: k, qtd: 0, valor: 0, itens: [] };
+      mapa[k].qtd++;
+      mapa[k].valor += numero(p.valor);
+      mapa[k].itens.push(p);
+    });
+    return Object.keys(mapa).map(function (k) { return mapa[k]; })
+      .sort(function (a, b) { return b.valor - a.valor || b.qtd - a.qtd; });
+  }
+
+  function porMes(lista) {
+    var meses = [];
+    for (var i = 1; i <= 12; i++) meses.push({ mes: i, enviadas: 0, fechadas: 0, valorFechado: 0 });
+    lista.forEach(function (p) {
+      var d = p.dataProposta ? new Date(p.dataProposta) : null;
+      if (d && !isNaN(d)) meses[d.getMonth()].enviadas++;
+      if (p.status === 'Fechada') {
+        var ref = p.dataFechamento || p.dataProposta;
+        var f = ref ? new Date(ref) : null;
+        if (f && !isNaN(f)) { meses[f.getMonth()].fechadas++; meses[f.getMonth()].valorFechado += numero(p.valor); }
+      }
+    });
+    return meses;
+  }
+
+  /** Divide "PIT PDA PCE HELICOIDAL" em serviços individuais.
+   *  Compara sem acento e testa os nomes longos primeiro, para "PCE HELICOIDAL"
+   *  não ser contado como "PCE" nem "PROJETO DE FUNDAÇÕES" como "PROJETO". */
+  function servicos(p) {
+    var bruto = String(p.servico || '').trim();
+    if (!bruto) return [];
+    var resto = ' ' + normalizar(bruto) + ' ';
+    var conhecidos = SERVICOS.concat(SERVICOS_LEGADO).sort(function (a, b) { return b.length - a.length; });
+    var achados = [];
+    conhecidos.forEach(function (nome) {
+      var alvo = normalizar(nome);
+      if (resto.indexOf(alvo) > -1) {
+        achados.push(nome);
+        resto = resto.split(alvo).join(' ');
+      }
+    });
+    if (!achados.length) return [bruto.toUpperCase()];
+    /* devolve na ordem em que a lista oficial define, para os gráficos ficarem estáveis */
+    var ordem = SERVICOS.concat(SERVICOS_LEGADO);
+    return achados.sort(function (a, b) { return ordem.indexOf(a) - ordem.indexOf(b); });
+  }
+
+  /* ---------- relatório semanal ---------- */
+
+  /** Segunda a domingo da semana que contém a data informada. */
+  function semanaDe(iso) {
+    var d = iso ? new Date(iso + 'T12:00:00') : new Date();
+    if (isNaN(d)) d = new Date();
+    var dia = d.getDay();                    // 0 = domingo
+    var desloca = dia === 0 ? -6 : 1 - dia;  // volta para a segunda
+    var ini = new Date(d.getTime());
+    ini.setDate(ini.getDate() + desloca);
+    var fim = new Date(ini.getTime());
+    fim.setDate(fim.getDate() + 6);
+    return { inicio: emISO(ini), fim: emISO(fim) };
+  }
+
+  function emISO(d) {
+    return d.getFullYear() + '-' + doisDig(d.getMonth() + 1) + '-' + doisDig(d.getDate());
+  }
+
+  function somaISO(iso, dias) {
+    var d = new Date(iso + 'T12:00:00');
+    d.setDate(d.getDate() + dias);
+    return emISO(d);
+  }
+
+  /** Última mudança para um status dentro da janela (usa o histórico de etapas). */
+  function mudouPara(p, status, inicio, fim) {
+    var achou = (p.historicoStatus || []).filter(function (h) {
+      return h.status === status && h.data >= inicio && h.data <= fim;
+    });
+    return achou.length ? achou[achou.length - 1].data : null;
+  }
+
+  /**
+   * Números da semana para a reunião: o que fechou, o que se perdeu,
+   * o que entrou, o esforço de cada vendedor e a agenda da semana seguinte.
+   */
+  function relatorioSemana(inicio, lista) {
+    var base = lista || estado.propostas;
+    var semana = semanaDe(inicio);
+    var ini = semana.inicio, fim = semana.fim;
+    var proxIni = somaISO(fim, 1), proxFim = somaISO(fim, 7);
+
+    var fechadas = [], perdidas = [], novas = [];
+    base.forEach(function (p) {
+      var f = p.status === 'Fechada' ? mudouPara(p, 'Fechada', ini, fim) : null;
+      if (f) fechadas.push({ p: p, data: f });
+      var x = p.status === 'Perdida' ? mudouPara(p, 'Perdida', ini, fim) : null;
+      if (x) perdidas.push({ p: p, data: x });
+      if ((p.dataProposta || '') >= ini && (p.dataProposta || '') <= fim) novas.push(p);
+    });
+
+    var abertas = base.filter(function (p) { return STATUS_ABERTOS.includes(p.status); });
+    var hoje = hojeISO();
+    /* agenda = daqui até o fim da próxima semana, para não sumir o que foi marcado
+       para os dias restantes da semana em análise */
+    var agenda = abertas.filter(function (p) {
+      return p.proximoContato && p.proximoContato >= hoje && p.proximoContato <= proxFim;
+    }).sort(function (a, b) { return a.proximoContato.localeCompare(b.proximoContato); });
+    var atrasados = abertas.filter(function (p) {
+      return p.proximoContato && p.proximoContato < hoje;
+    }).sort(function (a, b) { return a.proximoContato.localeCompare(b.proximoContato); });
+    var semAgenda = abertas.filter(function (p) { return !p.proximoContato && urgencia(p) !== 'ok'; });
+
+    /* contatos da semana por vendedor */
+    var porVendedor = {};
+    function linha(nome) {
+      if (!porVendedor[nome]) {
+        porVendedor[nome] = { vendedor: nome, contatos: 0, ligacoes: 0, reunioes: 0, fechado: 0, agendados: 0 };
+      }
+      return porVendedor[nome];
+    }
+    (estado.vendedores || []).forEach(linha);
+    base.forEach(function (p) {
+      (p.atividades || []).forEach(function (a) {
+        if (!a.data || a.data < ini || a.data > fim) return;
+        var l = linha(a.responsavel || p.vendedor || 'Sem vendedor');
+        l.contatos++;
+        if (a.tipo === 'Ligação') l.ligacoes++;
+        if (a.tipo === 'Reunião') l.reunioes++;
+      });
+    });
+    fechadas.forEach(function (f) { linha(f.p.vendedor || 'Sem vendedor').fechado += numero(f.p.valor); });
+    agenda.forEach(function (p) { linha(p.vendedor || 'Sem vendedor').agendados++; });
+
+    /* motivos das perdas da semana */
+    var motivos = {};
+    perdidas.forEach(function (x) {
+      var m = x.p.motivoPerda || 'Não informado';
+      motivos[m] = (motivos[m] || 0) + 1;
+    });
+
+    return {
+      inicio: ini, fim: fim, proximaInicio: proxIni, proximaFim: proxFim,
+      fechadas: fechadas, perdidas: perdidas, novas: novas,
+      valorFechado: fechadas.reduce(function (t, f) { return t + numero(f.p.valor); }, 0),
+      valorPerdido: perdidas.reduce(function (t, x) { return t + numero(x.p.valor); }, 0),
+      valorNovo: novas.reduce(function (t, p) { return t + numero(p.valor); }, 0),
+      motivos: motivos,
+      agenda: agenda, atrasados: atrasados, semAgenda: semAgenda,
+      equipe: Object.keys(porVendedor).map(function (k) { return porVendedor[k]; })
+        .sort(function (a, b) { return b.contatos - a.contatos; }),
+      abertasValor: abertas.reduce(function (t, p) { return t + numero(p.valor); }, 0),
+      abertasQtd: abertas.length
+    };
+  }
+
+  /* ---------- exportação ---------- */
+  window.Store = {
+    STATUS: STATUS,
+    STATUS_ABERTOS: STATUS_ABERTOS,
+    CLASSIFICACOES: CLASSIFICACOES,
+    TIPOS_ATIVIDADE: TIPOS_ATIVIDADE,
+    SERVICOS: SERVICOS,
+    get estado() { return estado; },
+    get propostas() { return estado.propostas; },
+    get config() { return estado.config; },
+    get vendedores() { return estado.vendedores; },
+    salvar: salvar,
+    localOk: localOk,
+    id: id,
+    normalizar: normalizar,
+    numero: numero,
+    moeda: moeda,
+    moedaCurta: moedaCurta,
+    valorCampo: valorCampo,
+    MOTIVOS_PERDA: MOTIVOS_PERDA,
+    dataBR: dataBR,
+    dataHoraBR: dataHoraBR,
+    chaveMomento: chaveMomento,
+    hojeISO: hojeISO,
+    agoraHora: agoraHora,
+    diasDesde: diasDesde,
+    dataDoContrato: dataDoContrato,
+    lerSemana: lerSemana,
+    novaProposta: novaProposta,
+    ultimoContato: ultimoContato,
+    ultimaAtividade: ultimaAtividade,
+    diasSemContato: diasSemContato,
+    urgencia: urgencia,
+    entradaNaEtapa: entradaNaEtapa,
+    diasNaEtapa: diasNaEtapa,
+    diasParaProximo: diasParaProximo,
+    agendaStatus: agendaStatus,
+    semanaDe: semanaDe,
+    relatorioSemana: relatorioSemana,
+    contarAtividades: contarAtividades,
+    adicionar: adicionar,
+    atualizar: atualizar,
+    remover: remover,
+    removerVarios: removerVarios,
+    registrarAtividade: registrarAtividade,
+    removerAtividade: removerAtividade,
+    mesclar: mesclar,
+    substituirTudo: substituirTudo,
+    limpar: limpar,
+    filtrar: filtrar,
+    resumo: resumo,
+    agruparPor: agruparPor,
+    anosComPropostas: anosComPropostas,
+    anoDaProposta: anoDaProposta,
+    porMes: porMes,
+    servicos: servicos
+  };
+})();
+
+</script>
+<script defer>
+/* ===========================================================
+   importers.js — planilha, PDFs, backup e exportações
+   =========================================================== */
+(function () {
+  'use strict';
+
+  var S = window.Store;
+
+  /* ---------------- Planilha (.xlsm / .xlsx) ---------------- */
+
+  var MAPA_COLUNAS = {
+    'contrato': 'contrato',
+    'nome do cliente': 'cliente',
+    'cliente': 'cliente',
+    'cnpj': 'cnpj',
+    'responsavel': 'contato',
+    'nome contato': 'contato',
+    'telefone': 'telefone',
+    'email': 'email',
+    'e-mail': 'email',
+    'cidade': 'cidade',
+    'estado': 'estado',
+    'uf': 'estado',
+    'servico': 'servico',
+    'tipo de servico': 'servico',
+    'descricao': 'descricao',
+    'valor total estimado': 'valor',
+    'valor': 'valor',
+    'semana consulta': 'semanaConsulta',
+    'proposta enviada': '_enviada',
+    'mes da proposta enviada': '_mesEnviada',
+    'status': '_status',
+    'mes da proposta fechada': '_mesFechada',
+    'probabilidade': 'classificacao',
+    'classificacao': 'tipoCliente',
+    'obra': 'obra',
+    'obra (pdf)': 'obra',
+    'vendedor': 'vendedor',
+    'codigo pdf': 'contrato',
+    'ref. pasta': '_refPasta'
+  };
+
+  function normalizarStatus(bruto, enviada) {
+    var t = S.normalizar(bruto);
+    if (t.indexOf('fechad') > -1) return 'Fechada';
+    if (t.indexOf('perdid') > -1) return 'Perdida';
+    if (t.indexOf('negocia') > -1) return 'Em negociação';
+    if (t.indexOf('aguardando') > -1) return 'Aguardando retorno';
+    if (t.indexOf('nao enviada') > -1) return 'Nova';
+    var e = S.normalizar(enviada);
+    if (e === 'sim') return 'Enviada';
+    return 'Nova';
+  }
+
+  function normalizarClassificacao(bruto) {
+    var t = S.normalizar(bruto);
+    if (t.indexOf('boa') > -1 || t.indexOf('bom') > -1) return 'Boa';
+    if (t.indexOf('ruim') > -1) return 'Ruim';
+    if (t.indexOf('regular') > -1) return 'Regular';
+    return 'Regular';
+  }
+
+  /** "FEV - SEM 02" -> data aproximada no ano de referência. */
+  function dataDaSemana(txt, anoRef) {
+    var s = S.lerSemana(txt);
+    if (!s || !s.mes) return '';
+    var ano = anoRef || new Date().getFullYear();
+    var dia = Math.min(28, Math.max(1, (s.semana - 1) * 7 + 3));
+    return ano + '-' + String(s.mes).padStart(2, '0') + '-' + String(dia).padStart(2, '0');
+  }
+
+  /** Converte as linhas da aba PROPOSTAS em propostas do app. */
+  function mapearLinhas(linhas) {
+    var itens = [], ignoradas = 0;
+    linhas.forEach(function (linha) {
+      var item = {};
+      Object.keys(linha).forEach(function (col) {
+        var destino = MAPA_COLUNAS[S.normalizar(col)];
+        if (destino) item[destino] = linha[col];
+      });
+
+      if (!String(item.cliente || '').trim() && !String(item.contrato || '').trim()) { ignoradas++; return; }
+
+      var p = {
+        contrato: String(item.contrato || '').trim(),
+        cliente: String(item.cliente || '').trim().toUpperCase(),
+        cnpj: String(item.cnpj || '').trim(),
+        contato: String(item.contato || '').trim(),
+        telefone: String(item.telefone || '').trim(),
+        email: String(item.email || '').trim(),
+        cidade: String(item.cidade || '').trim(),
+        estado: String(item.estado || '').trim().toUpperCase().slice(0, 2),
+        servico: String(item.servico || '').trim().toUpperCase(),
+        descricao: String(item.descricao || '').trim(),
+        obra: String(item.obra || '').trim(),
+        valor: S.numero(item.valor),
+        semanaConsulta: String(item.semanaConsulta || '').trim(),
+        status: normalizarStatus(item._status, item._enviada),
+        classificacao: normalizarClassificacao(item.classificacao),
+        tipoCliente: S.normalizar(item.tipoCliente).indexOf('antigo') > -1 ? 'ANTIGO' : 'NOVO',
+        vendedor: String(item.vendedor || '').trim()
+      };
+      p.dataProposta = S.dataDoContrato(p.contrato) || dataDaSemana(item._mesEnviada || item.semanaConsulta) || '';
+      var anoRef = p.dataProposta ? +p.dataProposta.slice(0, 4) : new Date().getFullYear();
+      if (p.status === 'Fechada') p.dataFechamento = dataDaSemana(item._mesFechada, anoRef) || p.dataProposta;
+      itens.push(p);
+    });
+    return { itens: itens, ignoradas: ignoradas };
+  }
+
+  function lerPlanilha(arquivo, aoTerminar, aoLogar) {
+    var leitor = new FileReader();
+    leitor.onload = function (ev) {
+      try {
+        var wb = XLSX.read(new Uint8Array(ev.target.result), { type: 'array' });
+        var nomeAba = wb.SheetNames.find(function (n) { return S.normalizar(n).indexOf('proposta') > -1 && S.normalizar(n).indexOf('fechada') === -1; }) || wb.SheetNames[0];
+        aoLogar('Lendo a aba "' + nomeAba + '".');
+        var linhas = XLSX.utils.sheet_to_json(wb.Sheets[nomeAba], { defval: '', raw: true });
+        var convertido = mapearLinhas(linhas);
+        var itens = convertido.itens;
+        var ignoradas = convertido.ignoradas;
+
+        var r = S.mesclar(itens, { preservarEdicoes: false });
+        aoLogar(itens.length + ' linhas convertidas — ' + r.novos + ' novas, ' + r.atualizados + ' atualizadas.');
+        if (ignoradas) aoLogar(ignoradas + ' linhas vazias ignoradas.');
+        aoTerminar(r);
+      } catch (erro) {
+        aoLogar('Não foi possível ler a planilha: ' + erro.message);
+      }
+    };
+    leitor.onerror = function () { aoLogar('Falha ao abrir o arquivo.'); };
+    leitor.readAsArrayBuffer(arquivo);
+  }
+
+  /* ---------------- PDFs ---------------- */
+
+  var PADROES = {
+    contrato: /(?:Proposta\s*n?[ºo°.]?|REFER[ÊE]NCIA)\s*:?\s*(\d{6}\s*-\s*\d{3})/i,
+    cnpj: /CNPJ\s*:?\s*(\d{2}\s*\.?\s*\d{3}\s*\.?\s*\d{3}\s*\/?\s*\d{4}\s*-?\s*\d{2})/i,
+    contato: /A\s*\/\s*C\s*:?\s*([^\n]{2,60})/i,
+    telefone: /(?:Tel|Telefone|Fone)\s*\.?\s*:\s*([()\d\s\-+.]{8,25})/i,
+    email: /E\s*-?\s*mail\s*:?\s*([\w.\-+]+@[\w.\-]+\.\w{2,})/i,
+    obra: /Obra\s*:?\s*([^\n]{2,80})/i,
+    cliente: /(?:Cliente|Raz[ãa]o Social)\s*:?\s*([^\n]{2,70})/i,
+    valor: /Valor\s+total\s*:\s*R?\$?\s*([\d.,]{4,})/i,
+    valorAlt: /(?:valor\s+(?:total|global|da\s+proposta))[^\d\n]{0,20}(\d[\d.,]{3,})/i
+  };
+
+  function extrairDoTexto(texto) {
+    var achado = {};
+    Object.keys(PADROES).forEach(function (chave) {
+      var m = PADROES[chave].exec(texto);
+      if (!m) return;
+      var v = m[1].replace(/\s+/g, ' ').trim();
+      if (chave === 'contrato' || chave === 'cnpj') v = v.replace(/\s/g, '');
+      if (chave === 'valor' || chave === 'valorAlt') v = S.numero(v);
+      achado[chave] = v;
+    });
+
+    if (!achado.valor && achado.valorAlt) achado.valor = achado.valorAlt;
+    delete achado.valorAlt;
+
+    // "Obra: Patolamento de guindaste – Concórdia/SC" -> cidade e UF
+    if (achado.obra) {
+      var loc = /([A-Za-zÀ-ÿ' .]{3,40})\s*\/\s*([A-Z]{2})\s*\.?\s*$/.exec(achado.obra);
+      if (loc) {
+        achado.cidade = loc[1].replace(/^[\s–-]+/, '').trim().toUpperCase();
+        achado.estado = loc[2].toUpperCase();
+      }
+    }
+    return achado;
+  }
+
+  /** "Proposta 145 - CLIENTE - CIDADE - SERVIÇO" */
+  function extrairDaPasta(nome) {
+    var partes = String(nome || '').split(/\s*-\s*/).map(function (s) { return s.trim(); });
+    return {
+      cliente: partes[1] ? partes[1].toUpperCase() : '',
+      cidade: partes[2] || '',
+      servico: partes[3] ? partes[3].toUpperCase() : ''
+    };
+  }
+
+  /** Remonta o texto de uma página respeitando linhas e espaços reais. */
+  function montarTexto(items) {
+    var linhas = [], atual = null, ultimoY = null, fimX = null;
+    items.forEach(function (it) {
+      if (!it.str) return;
+      var x = it.transform ? it.transform[4] : 0;
+      var y = it.transform ? Math.round(it.transform[5]) : 0;
+      if (ultimoY === null || Math.abs(y - ultimoY) > 2) {
+        atual = []; linhas.push(atual); ultimoY = y; fimX = null;
+      }
+      // só insere espaço quando há um vão real entre os trechos
+      if (fimX !== null && x - fimX > 1.2 && !/\s$/.test(atual[atual.length - 1] || '')) atual.push(' ');
+      atual.push(it.str);
+      fimX = x + (it.width || 0);
+    });
+    return linhas.map(function (l) {
+      return l.join('').replace(/[ \t]+/g, ' ').trim();
+    }).filter(Boolean).join('\n');
+  }
+
+  function textoDoPdf(arquivo) {
+    return arquivo.arrayBuffer().then(function (buffer) {
+      return pdfjsLib.getDocument({ data: new Uint8Array(buffer) }).promise;
+    }).then(function (doc) {
+      var paginas = [];
+      for (var i = 1; i <= Math.min(doc.numPages, 10); i++) paginas.push(i);
+      return Promise.all(paginas.map(function (n) {
+        return doc.getPage(n).then(function (pg) { return pg.getTextContent(); })
+          .then(function (c) { return montarTexto(c.items); });
+      })).then(function (textos) { return textos.join('\n'); });
+    });
+  }
+
+  /**
+   * Lê o nome do arquivo no padrão
+   * "Proposta - DDMMAA - Número - CLIENTE - SERVIÇO [- Rev.01]".
+   */
+  function analisarNomeArquivo(nomeArquivo) {
+    var nome = String(nomeArquivo || '').replace(/\.pdf$/i, '').replace(/_/g, ' ').replace(/\s+/g, ' ').trim();
+    var m = /^proposta\s*[-–]?\s*(\d{2})\s*(\d{2})\s*(\d{2})\s*[-–]\s*(\d{1,4})\s*[-–]\s*(.*)$/i.exec(nome);
+    if (!m) return null;
+
+    var resto = m[5] || '';
+    var revisao = 0;
+    var rev = /[-–]?\s*rev\.?\s*(\d{1,2})\s*$/i.exec(resto);
+    if (rev) { revisao = parseInt(rev[1], 10) || 0; resto = resto.slice(0, rev.index); }
+
+    var partes = resto.split(/\s*[-–]\s*/).map(function (s) { return s.trim(); }).filter(Boolean);
+    var servico = partes.length > 1 ? partes[partes.length - 1] : '';
+    var cliente = partes.length > 1 ? partes.slice(0, -1).join(' - ') : (partes[0] || '');
+
+    return {
+      contrato: m[1] + m[2] + m[3] + '-' + String(m[4]).padStart(3, '0'),
+      dataProposta: (2000 + +m[3]) + '-' + m[2] + '-' + m[1],
+      cliente: cliente.toUpperCase(),
+      servico: servico.toUpperCase(),
+      revisao: revisao
+    };
+  }
+
+  /**
+   * Escolhe um PDF por proposta: o da revisão mais recente.
+   * Arquivos fora do padrão (ART, contrato, memorial) ficam de fora,
+   * a não ser que a pasta não tenha nenhum PDF no padrão.
+   */
+  function selecionarPdfs(lista, aoLogar) {
+    var porProposta = {};
+    var semPadrao = {};
+
+    lista.forEach(function (arquivo) {
+      var caminho = arquivo.webkitRelativePath || '';
+      var pastas = caminho.split('/');
+      var pasta = pastas.length > 1 ? pastas.slice(0, -1).join('/') : '';
+      var info = analisarNomeArquivo(arquivo.name);
+
+      if (info) {
+        var atual = porProposta[info.contrato];
+        if (!atual) {
+          porProposta[info.contrato] = { arquivo: arquivo, info: info, pasta: pasta, versoes: 1 };
+        } else if (info.revisao > atual.info.revisao) {
+          aoLogar('· revisão anterior ignorada: ' + atual.arquivo.name);
+          porProposta[info.contrato] = { arquivo: arquivo, info: info, pasta: pasta, versoes: atual.versoes + 1 };
+        } else {
+          atual.versoes++;
+          aoLogar('· revisão anterior ignorada: ' + arquivo.name);
+        }
+      } else {
+        if (!semPadrao[pasta]) semPadrao[pasta] = [];
+        semPadrao[pasta].push(arquivo);
+      }
+    });
+
+    var escolhidos = Object.keys(porProposta).map(function (k) { return porProposta[k]; });
+    var pastasComPadrao = {};
+    escolhidos.forEach(function (e) { pastasComPadrao[e.pasta] = true; });
+
+    Object.keys(semPadrao).forEach(function (pasta) {
+      if (pastasComPadrao[pasta]) {
+        aoLogar('· ' + semPadrao[pasta].length + ' anexo(s) ignorado(s) em "' + (pasta.split('/').pop() || 'raiz') + '"');
+        return;
+      }
+      // pasta sem nenhum arquivo no padrão: lê o primeiro PDF para não perder a proposta
+      var primeiro = semPadrao[pasta].slice().sort(function (a, b) { return a.name.localeCompare(b.name); })[0];
+      aoLogar('· fora do padrão, lendo assim mesmo: ' + primeiro.name);
+      escolhidos.push({ arquivo: primeiro, info: null, pasta: pasta, versoes: 1 });
+    });
+
+    return escolhidos;
+  }
+
+  function processarPdfs(arquivos, aoProgredir, aoTerminar, aoLogar) {
+    var pdfs = Array.prototype.slice.call(arquivos).filter(function (f) {
+      return /\.pdf$/i.test(f.name);
+    });
+    if (!pdfs.length) { aoLogar('Nenhum PDF encontrado na seleção.'); aoTerminar(null); return; }
+
+    var selecao = selecionarPdfs(pdfs, aoLogar);
+    aoLogar(pdfs.length + ' PDFs na seleção → ' + selecao.length + ' proposta(s) a ler.');
+
+    if (window.pdfjsLib && pdfjsLib.GlobalWorkerOptions) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+
+    var itens = [], indice = 0, falhas = 0;
+
+    function proximo() {
+      if (indice >= selecao.length) {
+        var r = S.mesclar(itens, { preservarEdicoes: true });
+        aoLogar('Concluído: ' + r.novos + ' propostas novas e ' + r.atualizados + ' atualizadas.');
+        if (falhas) aoLogar(falhas + ' PDFs não puderam ser lidos (provavelmente digitalizados, sem texto).');
+        aoTerminar(r);
+        return;
+      }
+      var escolhido = selecao[indice];
+      var arquivo = escolhido.arquivo;
+      var nomePasta = escolhido.pasta ? escolhido.pasta.split('/').pop() : '';
+
+      aoProgredir(indice / selecao.length, arquivo.name);
+
+      textoDoPdf(arquivo).then(function (texto) {
+        var doPdf = extrairDoTexto(texto);
+        var doNome = escolhido.info || {};
+        var daPasta = nomePasta ? extrairDaPasta(nomePasta) : {};
+        var p = {
+          contrato: doNome.contrato || doPdf.contrato || '',
+          cliente: doNome.cliente || daPasta.cliente || doPdf.cliente || '',
+          cidade: daPasta.cidade || doPdf.cidade || '',
+          estado: doPdf.estado || '',
+          servico: doNome.servico || daPasta.servico || '',
+          cnpj: doPdf.cnpj || '',
+          contato: doPdf.contato || '',
+          telefone: doPdf.telefone || '',
+          email: doPdf.email || '',
+          obra: doPdf.obra || '',
+          valor: doPdf.valor || 0,
+          revisao: doNome.revisao || 0,
+          arquivo: arquivo.name
+        };
+        if (doNome.dataProposta) p.dataProposta = doNome.dataProposta;
+        if (!p.contrato && !p.cliente) { falhas++; aoLogar('Sem dados reconhecidos: ' + arquivo.name); }
+        else {
+          itens.push(p);
+          aoLogar('✓ ' + (p.contrato || '—') + '  ' + (p.cliente || arquivo.name) +
+            (p.revisao ? '  (Rev.' + String(p.revisao).padStart(2, '0') + ')' : ''));
+        }
+      }).catch(function (e) {
+        falhas++;
+        aoLogar('✗ ' + arquivo.name + ' (' + e.message + ')');
+      }).then(function () {
+        indice++;
+        proximo();
+      });
+    }
+    proximo();
+  }
+
+  /* ---------------- Backup e exportações ---------------- */
+
+  function baixar(nome, conteudo, tipo) {
+    var blob = conteudo instanceof Blob ? conteudo : new Blob([conteudo], { type: tipo || 'text/plain;charset=utf-8' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = nome;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 2000);
+  }
+
+  function carimbo() {
+    var d = new Date();
+    return d.toISOString().slice(0, 10).replace(/-/g, '') + '_' + String(d.getHours()).padStart(2, '0') + String(d.getMinutes()).padStart(2, '0');
+  }
+
+  function exportarBackup() {
+    baixar('backup_gestao_comercial_' + carimbo() + '.json', JSON.stringify(S.estado, null, 2), 'application/json');
+  }
+
+  function importarBackup(arquivo, aoTerminar, aoLogar) {
+    var leitor = new FileReader();
+    leitor.onload = function (ev) {
+      try {
+        var dados = JSON.parse(ev.target.result);
+        if (!dados.propostas) throw new Error('arquivo sem lista de propostas');
+        S.substituirTudo(dados);
+        aoLogar('Backup restaurado: ' + dados.propostas.length + ' propostas.');
+        aoTerminar();
+      } catch (e) { aoLogar('Arquivo inválido: ' + e.message); }
+    };
+    leitor.readAsText(arquivo);
+  }
+
+  function importarJsonExtrator(arquivo, aoTerminar, aoLogar) {
+    var leitor = new FileReader();
+    leitor.onload = function (ev) {
+      try {
+        var lista = JSON.parse(ev.target.result);
+        if (!Array.isArray(lista)) throw new Error('esperava uma lista de propostas');
+        var itens = lista.map(function (x) {
+          return {
+            contrato: String(x.contrato || x['Código PDF'] || x.codigo || '').trim(),
+            cliente: String(x.cliente || x.Cliente || '').trim().toUpperCase(),
+            cnpj: String(x.cnpj || x.CNPJ || '').trim(),
+            contato: String(x.contato || x['Nome Contato'] || '').trim(),
+            telefone: String(x.telefone || x.Telefone || '').trim(),
+            email: String(x.email || x.Email || '').trim(),
+            cidade: String(x.cidade || x.Cidade || '').trim(),
+            estado: String(x.estado || x.Estado || '').trim().toUpperCase().slice(0, 2),
+            servico: String(x.servico || x['Tipo de Serviço'] || '').trim().toUpperCase(),
+            obra: String(x.obra || x['Obra (PDF)'] || '').trim(),
+            valor: S.numero(x.valor || x.Valor || 0)
+          };
+        }).filter(function (p) { return p.contrato || p.cliente; });
+        var r = S.mesclar(itens, { preservarEdicoes: true });
+        aoLogar(r.novos + ' novas e ' + r.atualizados + ' atualizadas a partir do extrator.');
+        aoTerminar(r);
+      } catch (e) { aoLogar('Arquivo inválido: ' + e.message); }
+    };
+    leitor.readAsText(arquivo);
+  }
+
+  function linhasExportacao(lista) {
+    return lista.map(function (p) {
+      return {
+        'Contrato': p.contrato,
+        'Cliente': p.cliente,
+        'CNPJ': p.cnpj,
+        'Contato': p.contato,
+        'Telefone': p.telefone,
+        'Email': p.email,
+        'Cidade': p.cidade,
+        'UF': p.estado,
+        'Serviço': p.servico,
+        'Descrição': p.descricao,
+        'Obra': p.obra,
+        'Valor': S.numero(p.valor),
+        'Revisão': p.revisao || 0,
+        'Status': p.status,
+        'Classificação': p.classificacao,
+        'Tipo de cliente': p.tipoCliente,
+        'Vendedor': p.vendedor,
+        'Data da proposta': p.dataProposta,
+        'Entrou na etapa em': S.entradaNaEtapa(p) || '',
+        'Dias na etapa': S.diasNaEtapa(p),
+        'Último contato': S.ultimoContato(p) || '',
+        'Dias sem contato': S.diasSemContato(p),
+        'Próximo contato': p.proximoContato || '',
+        'Motivo da perda': p.motivoPerda || '',
+        'Ligações': S.contarAtividades(p, 'Ligação'),
+        'Reuniões': S.contarAtividades(p, 'Reunião'),
+        'Observações': p.observacoes || ''
+      };
+    });
+  }
+
+  function exportarCSV(lista) {
+    var linhas = linhasExportacao(lista);
+    if (!linhas.length) return false;
+    var cab = Object.keys(linhas[0]);
+    var corpo = linhas.map(function (l) {
+      return cab.map(function (c) {
+        var v = l[c] == null ? '' : String(l[c]);
+        return '"' + v.replace(/"/g, '""') + '"';
+      }).join(';');
+    });
+    baixar('propostas_' + carimbo() + '.csv', '\ufeff' + cab.join(';') + '\n' + corpo.join('\n'), 'text/csv;charset=utf-8');
+    return true;
+  }
+
+  function exportarXLSX(lista) {
+    var linhas = linhasExportacao(lista);
+    if (!linhas.length) return false;
+    var wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(linhas), 'PROPOSTAS');
+
+    var atividades = [];
+    lista.forEach(function (p) {
+      (p.atividades || []).forEach(function (a) {
+        atividades.push({
+          'Contrato': p.contrato, 'Cliente': p.cliente, 'Data': a.data, 'Hora': a.hora || '',
+          'Tipo': a.tipo, 'Responsável': a.responsavel, 'Observação': a.obs
+        });
+      });
+    });
+    if (atividades.length) XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(atividades), 'ATIVIDADES');
+    XLSX.writeFile(wb, 'gestao_comercial_' + carimbo() + '.xlsx');
+    return true;
+  }
+
+  window.Importers = {
+    lerPlanilha: lerPlanilha,
+    mapearLinhas: mapearLinhas,
+    processarPdfs: processarPdfs,
+    exportarBackup: exportarBackup,
+    importarBackup: importarBackup,
+    importarJsonExtrator: importarJsonExtrator,
+    exportarCSV: exportarCSV,
+    exportarXLSX: exportarXLSX,
+    extrairDoTexto: extrairDoTexto,
+    montarTexto: montarTexto,
+    extrairDaPasta: extrairDaPasta,
+    analisarNomeArquivo: analisarNomeArquivo,
+    selecionarPdfs: selecionarPdfs
+  };
+})();
+
+</script>
+<script defer>
+/* ===========================================================
+   charts.js — gráficos do painel (Chart.js)
+   =========================================================== */
+(function () {
+  'use strict';
+
+  var S = window.Store;
+  var instancias = {};
+  var AZUL = '#1E73D3', AZUL_CLARO = '#8FC0F2', AZUL_SUAVE = '#D7E9FC';
+  var VERDE = '#10996B', AMARELO = '#E0A63A', VERMELHO = '#D64545';
+  var MESES = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+
+  function base() {
+    if (!window.Chart) return;
+    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.font.size = 12;
+    Chart.defaults.color = '#5B7590';
+    Chart.defaults.plugins.legend.labels.boxWidth = 10;
+    Chart.defaults.plugins.legend.labels.boxHeight = 10;
+    Chart.defaults.plugins.legend.labels.usePointStyle = true;
+    Chart.defaults.maintainAspectRatio = false;
+  }
+
+  function desenhar(canvasId, config) {
+    if (!window.Chart) return;
+    var el = document.getElementById(canvasId);
+    if (!el) return;
+    if (instancias[canvasId]) instancias[canvasId].destroy();
+    instancias[canvasId] = new Chart(el.getContext('2d'), config);
+  }
+
+  var eixoLimpo = {
+    grid: { color: '#EDF3FA', drawBorder: false },
+    ticks: { padding: 6 },
+    border: { display: false }
+  };
+
+  function porMes(lista) {
+    var dados = S.porMes(lista);
+    desenhar('ch-mes', {
+      type: 'bar',
+      data: {
+        labels: MESES,
+        datasets: [
+          { label: 'Propostas enviadas', data: dados.map(function (m) { return m.enviadas; }), backgroundColor: AZUL_CLARO, borderRadius: 5, yAxisID: 'y', order: 2 },
+          { label: 'Propostas fechadas', data: dados.map(function (m) { return m.fechadas; }), backgroundColor: AZUL, borderRadius: 5, yAxisID: 'y', order: 2 },
+          {
+            label: 'Valor fechado', type: 'line', data: dados.map(function (m) { return m.valorFechado; }),
+            borderColor: VERDE, backgroundColor: VERDE, tension: .35, yAxisID: 'y1', pointRadius: 3, borderWidth: 2, order: 1
+          }
+        ]
+      },
+      options: {
+        interaction: { mode: 'index', intersect: false },
+        scales: {
+          x: { grid: { display: false }, border: { display: false } },
+          y: Object.assign({ beginAtZero: true, title: { display: false } }, eixoLimpo),
+          y1: {
+            position: 'right', beginAtZero: true, grid: { display: false }, border: { display: false },
+            ticks: { callback: function (v) { return S.moedaCurta(v); } }
+          }
+        },
+        plugins: {
+          tooltip: {
+            callbacks: {
+              label: function (c) {
+                if (c.dataset.yAxisID === 'y1') return c.dataset.label + ': ' + S.moeda(c.parsed.y);
+                return c.dataset.label + ': ' + c.parsed.y;
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  function classificacao(res) {
+    desenhar('ch-classificacao', {
+      type: 'doughnut',
+      data: {
+        labels: ['Boa', 'Regular', 'Ruim'],
+        datasets: [{
+          data: [res.boas, res.regulares, res.ruins],
+          backgroundColor: [VERDE, AMARELO, VERMELHO],
+          borderWidth: 3, borderColor: '#fff', hoverOffset: 6
+        }]
+      },
+      options: {
+        cutout: '62%',
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: {
+            callbacks: {
+              label: function (c) {
+                var total = c.dataset.data.reduce(function (a, b) { return a + b; }, 0) || 1;
+                return c.label + ': ' + c.parsed + ' (' + Math.round(c.parsed / total * 100) + '%)';
+              }
+            }
+          }
+        }
+      }
+    });
+  }
+
+  /** modo: 'cotado' (todas as propostas) ou 'fechado' (somente status Fechada). */
+  function porEstado(lista, modo) {
+    var fechado = modo === 'fechado';
+    var base = fechado ? lista.filter(function (p) { return p.status === 'Fechada'; }) : lista;
+    var grupos = S.agruparPor(base, 'estado').slice(0, 8);
+
+    var canvas = document.getElementById('ch-estado');
+    var vazio = document.getElementById('ch-estado-vazio');
+    if (vazio && canvas) {
+      var semDados = !grupos.length;
+      vazio.hidden = !semDados;
+      canvas.style.display = semDados ? 'none' : '';
+      vazio.textContent = fechado
+        ? 'Nenhuma proposta fechada no período selecionado.'
+        : 'Nenhuma proposta no período selecionado.';
+      if (semDados) {
+        if (instancias['ch-estado']) { instancias['ch-estado'].destroy(); delete instancias['ch-estado']; }
+        return;
+      }
+    }
+
+    desenhar('ch-estado', {
+      type: 'bar',
+      data: {
+        labels: grupos.map(function (g) { return g.chave; }),
+        datasets: [{
+          label: fechado ? 'Valor fechado' : 'Valor cotado', data: grupos.map(function (g) { return g.valor; }),
+          backgroundColor: AZUL, borderRadius: 5, barThickness: 18
+        }]
+      },
+      options: {
+        indexAxis: 'y',
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            callbacks: {
+              label: function (c) {
+                var g = grupos[c.dataIndex];
+                return S.moeda(g.valor) + ' — ' + g.qtd + (fechado ? ' fechada(s)' : ' proposta(s)');
+              }
+            }
+          }
+        },
+        scales: {
+          x: Object.assign({ beginAtZero: true, ticks: { callback: function (v) { return S.moedaCurta(v); } } }, eixoLimpo),
+          y: { grid: { display: false }, border: { display: false } }
+        }
+      }
+    });
+  }
+
+  /** Quantidade (barra) e valor cotado (linha): PIT é volume, projeto é ticket. */
+  function porServico(lista) {
+    var dados = {};
+    lista.forEach(function (p) {
+      var servicos = S.servicos(p);
+      if (!servicos.length) return;
+      /* propostas com mais de um serviço rateiam o valor, senão o total infla */
+      var fatia = S.numero(p.valor) / servicos.length;
+      servicos.forEach(function (s) {
+        if (!dados[s]) dados[s] = { qtd: 0, valor: 0 };
+        dados[s].qtd++;
+        dados[s].valor += fatia;
+      });
+    });
+    var pares = Object.keys(dados).map(function (k) { return { nome: k, qtd: dados[k].qtd, valor: dados[k].valor }; })
+      .sort(function (a, b) { return b.valor - a.valor; }).slice(0, 8);
+
+    desenhar('ch-servico', {
+      type: 'bar',
+      data: {
+        labels: pares.map(function (p) { return p.nome; }),
+        datasets: [
+          { label: 'Propostas', data: pares.map(function (p) { return p.qtd; }), backgroundColor: AZUL_CLARO, borderRadius: 5, yAxisID: 'y', order: 2 },
+          {
+            label: 'Valor cotado', type: 'line', data: pares.map(function (p) { return p.valor; }),
+            borderColor: VERDE, backgroundColor: VERDE, tension: .3, pointRadius: 3, borderWidth: 2, yAxisID: 'y1', order: 1
+          }
+        ]
+      },
+      options: {
+        interaction: { mode: 'index', intersect: false },
+        plugins: {
+          legend: { position: 'bottom' },
+          tooltip: {
+            callbacks: {
+              label: function (ctx) {
+                var d = pares[ctx.dataIndex];
+                if (ctx.dataset.type === 'line') {
+                  return 'Valor cotado: ' + S.moeda(d.valor) + ' (média ' + S.moeda(d.valor / d.qtd) + ')';
+                }
+                return 'Propostas: ' + d.qtd;
+              }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { display: false }, border: { display: false } },
+          y: Object.assign({ beginAtZero: true, title: { display: true, text: 'propostas' } }, eixoLimpo),
+          y1: {
+            position: 'right', beginAtZero: true, grid: { display: false }, border: { display: false },
+            ticks: { callback: function (v) { return S.moedaCurta(v); } }
+          }
+        }
+      }
+    });
+  }
+
+  function equipe(lista, vendedores, dias) {
+    var corte = new Date(Date.now() - dias * 86400000).toISOString().slice(0, 10);
+    var nomes = vendedores.length ? vendedores.slice() : ['Sem vendedor'];
+    var tipos = ['Ligação', 'Reunião', 'E-mail', 'WhatsApp', 'Visita'];
+    var cores = [AZUL, VERDE, AZUL_CLARO, AMARELO, AZUL_SUAVE];
+
+    var matriz = tipos.map(function () { return nomes.map(function () { return 0; }); });
+    lista.forEach(function (p) {
+      (p.atividades || []).forEach(function (a) {
+        if ((a.data || '') < corte) return;
+        var quem = a.responsavel || p.vendedor || 'Sem vendedor';
+        var col = nomes.indexOf(quem);
+        if (col === -1) { nomes.push(quem); matriz.forEach(function (l) { l.push(0); }); col = nomes.length - 1; }
+        var lin = tipos.indexOf(a.tipo);
+        if (lin === -1) return;
+        matriz[lin][col]++;
+      });
+    });
+
+    desenhar('ch-equipe', {
+      type: 'bar',
+      data: {
+        labels: nomes,
+        datasets: tipos.map(function (t, i) {
+          return { label: t, data: matriz[i], backgroundColor: cores[i], borderRadius: 4, stack: 'a' };
+        })
+      },
+      options: {
+        plugins: { legend: { position: 'bottom' } },
+        scales: {
+          x: { stacked: true, grid: { display: false }, border: { display: false } },
+          y: Object.assign({ stacked: true, beginAtZero: true }, eixoLimpo)
+        }
+      }
+    });
+  }
+
+  window.Charts = { base: base, porMes: porMes, classificacao: classificacao, porEstado: porEstado, porServico: porServico, equipe: equipe };
+})();
+
+</script>
+<script defer>
+/* ===========================================================
+   app.js — telas, interações e renderização
+   =========================================================== */
+(function () {
+  'use strict';
+
+  var S = window.Store;
+  var I = window.Importers;
+
+  var el = function (id) { return document.getElementById(id); };
+  var esc = function (t) {
+    return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+    });
+  };
+
+  var TITULOS = {
+    painel: ['Painel', 'Visão geral do comercial'],
+    funil: ['Funil', 'Arraste as propostas entre as etapas'],
+    propostas: ['Propostas', 'Base completa, com filtros e busca'],
+    followup: ['Follow-up', 'Quem precisa de contato agora'],
+    equipe: ['Equipe', 'Ligações, reuniões e resultados por vendedor'],
+    relatorio: ['Relatório', 'Uma página para a reunião de segunda'],
+    dados: ['Importar', 'Planilha, PDFs e backups'],
+    config: ['Ajustes', 'Metas e equipe comercial']
+  };
+
+  var estadoUI = {
+    view: 'painel',
+    periodo: 'tudo',
+    ordem: { campo: 'dataProposta', desc: true },
+    propostaAberta: null,
+    selecao: [],
+    fuLimite: 120,
+    relSemana: ''
+  };
+
+  /* ---------------- helpers de UI ---------------- */
+
+  function toast(msg) {
+    var t = el('toast');
+    t.textContent = msg;
+    t.hidden = false;
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function () { t.hidden = true; }, 2600);
+  }
+
+  function logar(caixaId, msg) {
+    var box = el(caixaId);
+    var linha = document.createElement('div');
+    linha.textContent = msg;
+    box.appendChild(linha);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function tagClassificacao(c) {
+    var mapa = { Boa: 'tag-ok', Regular: 'tag-warn', Ruim: 'tag-bad' };
+    return '<span class="tag ' + (mapa[c] || 'tag-neutral') + '">' + esc(c || '—') + '</span>';
+  }
+
+  function tagStatus(s) {
+    var mapa = { Fechada: 'tag-ok', Perdida: 'tag-bad', 'Em negociação': 'tag-neutral', 'Aguardando retorno': 'tag-warn' };
+    return '<span class="tag ' + (mapa[s] || 'tag-neutral') + '">' + esc(s) + '</span>';
+  }
+
+  function selo(p) {
+    return p.revisao ? ' <span class="tag tag-neutral">Rev.' + String(p.revisao).padStart(2, '0') + '</span>' : '';
+  }
+
+  function textoEtapa(p) {
+    var d = S.diasNaEtapa(p);
+    if (d == null) return '';
+    if (d === 0) return 'entrou hoje';
+    return d + ' dia' + (d > 1 ? 's' : '') + ' nesta etapa';
+  }
+
+  /** comHora: só o drawer mostra o horário; nas listas o rótulo ficaria comprido demais. */
+  function textoContato(p, comHora) {
+    var d = S.diasSemContato(p);
+    var a = S.ultimaAtividade(p);
+    if (d == null) return 'sem registro';
+    if (!a) return 'nenhum contato há ' + d + 'd';
+    return (comHora ? S.dataHoraBR(a.data, a.hora) : S.dataBR(a.data)) + ' · ' + d + 'd';
+  }
+
+  function opcoes(lista, selecionado) {
+    return lista.map(function (v) {
+      return '<option value="' + esc(v) + '"' + (v === selecionado ? ' selected' : '') + '>' + esc(v) + '</option>';
+    }).join('');
+  }
+
+  function filtrosAtuais(extra) {
+    return Object.assign({ periodo: estadoUI.periodo }, extra || {});
+  }
+
+  /* ---------------- navegação ---------------- */
+
+  function mostrarView(nome) {
+    estadoUI.view = nome;
+    document.querySelectorAll('.view').forEach(function (v) { v.classList.remove('is-active'); });
+    var alvo = el('view-' + nome);
+    if (alvo) alvo.classList.add('is-active');
+    document.querySelectorAll('.nav-item, .tab').forEach(function (b) {
+      b.classList.toggle('is-active', b.dataset.view === nome);
+    });
+    preencherPeriodos();   /* a lista de anos muda conforme a base é importada */
+    el('aviso-base-vazia').hidden = S.propostas.length > 0 || nome === 'dados';
+    el('view-title').textContent = TITULOS[nome][0];
+    el('view-subtitle').textContent = TITULOS[nome][1];
+    window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+    renderizarView(nome);
+  }
+
+  function renderizarView(nome) {
+    if (nome === 'painel') renderPainel();
+    if (nome === 'funil') renderFunil();
+    if (nome === 'propostas') renderPropostas();
+    if (nome === 'followup') renderFollowup();
+    if (nome === 'equipe') renderEquipe();
+    if (nome === 'relatorio') renderRelatorio();
+    if (nome === 'config') renderConfig();
+  }
+
+  function renderTudo() {
+    preencherSelects();
+    renderizarView(estadoUI.view);
+  }
+
+  /* ---------------- painel ---------------- */
+
+  function renderPainel() {
+    var lista = S.filtrar(filtrosAtuais());
+    var r = S.resumo(lista);
+    var cfg = S.config;
+
+    var mesAtual = new Date().getMonth();
+    var doMes = lista.filter(function (p) {
+      return p.dataProposta && new Date(p.dataProposta).getMonth() === mesAtual;
+    });
+    var fechadoMes = lista.filter(function (p) {
+      var ref = p.dataFechamento || p.dataProposta;
+      return p.status === 'Fechada' && ref && new Date(ref).getMonth() === mesAtual;
+    }).reduce(function (s, p) { return s + S.numero(p.valor); }, 0);
+
+    var pctPropostas = cfg.metaPropostas ? Math.min(100, doMes.length / cfg.metaPropostas * 100) : 0;
+    var pctValor = cfg.metaValor ? Math.min(100, fechadoMes / cfg.metaValor * 100) : 0;
+
+    el('kpis').innerHTML = [
+      kpi('Propostas no período', r.total, r.abertas + ' em aberto · ' + r.fechadas + ' fechadas'),
+      kpi('Valor em aberto', S.moedaCurta(r.valorAberto), r.abertas + ' propostas aguardando decisão'),
+      kpi('Valor fechado', S.moedaCurta(r.valorFechado), 'Ticket médio ' + S.moedaCurta(r.ticketMedio)),
+      kpi('Conversão', r.conversao.toFixed(0) + '%', r.fechadas + ' fechadas de ' + r.total + ' · ' + r.taxaGanho.toFixed(0) + '% entre as decididas'),
+      kpi('Sem contato há tempo', r.atrasadas, 'limite de ' + cfg.diasFollowup + ' dias', r.atrasadas > 0),
+      kpi('Meta do mês', doMes.length + '/' + cfg.metaPropostas, S.moedaCurta(fechadoMes) + ' de ' + S.moedaCurta(cfg.metaValor), false, Math.max(pctPropostas, pctValor))
+    ].join('');
+
+    // funil
+    var etapas = [
+      { nome: 'Novas', status: ['Nova'] },
+      { nome: 'Enviadas', status: ['Enviada'] },
+      { nome: 'Em negociação', status: ['Em negociação'] },
+      { nome: 'Aguardando retorno', status: ['Aguardando retorno'] },
+      { nome: 'Fechadas', status: ['Fechada'], tom: 'ok' },
+      { nome: 'Perdidas', status: ['Perdida'], tom: 'bad' }
+    ];
+    var maior = 1;
+    etapas.forEach(function (e) {
+      e.itens = lista.filter(function (p) { return e.status.includes(p.status); });
+      e.valor = e.itens.reduce(function (s, p) { return s + S.numero(p.valor); }, 0);
+      if (e.itens.length > maior) maior = e.itens.length;
+    });
+    el('funnel-bars').innerHTML = etapas.map(function (e) {
+      var largura = Math.max(3, e.itens.length / maior * 100);
+      var dias = e.itens.map(function (p) { return S.diasNaEtapa(p); }).filter(function (d) { return d != null; });
+      var media = dias.length ? Math.round(dias.reduce(function (a, b) { return a + b; }, 0) / dias.length) : null;
+      var nota = media == null ? '' : ' <span style="color:var(--ink-soft);font-weight:500">· ' + media + 'd na etapa</span>';
+      return '<div class="funnel-row" data-tone="' + (e.tom || '') + '">' +
+        '<span class="funnel-name">' + e.nome + '</span>' +
+        '<div class="funnel-track"><div class="funnel-fill" style="width:' + largura + '%">' + e.itens.length + '</div></div>' +
+        '<span class="funnel-value">' + S.moedaCurta(e.valor) + nota + '</span></div>';
+    }).join('');
+    el('funnel-note').textContent = r.conversao.toFixed(0) + '% das propostas viraram contrato';
+
+    // listas
+    var abertas = lista.filter(function (p) { return S.STATUS_ABERTOS.includes(p.status); })
+      .sort(function (a, b) { return S.numero(b.valor) - S.numero(a.valor); }).slice(0, 6);
+    el('top-oportunidades').innerHTML = abertas.length ? abertas.map(function (p) {
+      return '<div class="mini-row clickable" data-abrir="' + p.id + '"><div class="m-main"><strong>' + esc(p.cliente) + '</strong>' +
+        '<small>' + esc(p.contrato || '—') + ' · ' + esc(p.cidade || '—') + ' · ' + textoContato(p) + '</small></div>' +
+        '<span class="m-val">' + S.moedaCurta(p.valor) + '</span></div>';
+    }).join('') : vazio('Nenhuma proposta aberta no período.');
+
+    var clientes = S.agruparPor(lista.filter(function (p) { return p.status === 'Fechada'; }), 'cliente').slice(0, 6);
+    el('top-clientes').innerHTML = clientes.length ? clientes.map(function (g) {
+      return '<div class="mini-row"><div class="m-main"><strong>' + esc(g.chave) + '</strong><small>' + g.qtd + ' proposta(s) fechada(s)</small></div>' +
+        '<span class="m-val">' + S.moedaCurta(g.valor) + '</span></div>';
+    }).join('') : vazio('Nenhuma proposta fechada ainda.');
+
+    if (window.Charts && window.Chart) {
+      Charts.base();
+      Charts.porMes(lista);
+      Charts.classificacao(r);
+      var modoEstado = el('ch-estado-modo').value;
+      el('ch-estado-titulo').textContent =
+        (modoEstado === 'fechado' ? 'Valor fechado por estado' : 'Valor cotado por estado') + ' (top 8)';
+      Charts.porEstado(lista, modoEstado);
+      Charts.porServico(lista);
+    }
+  }
+
+  function kpi(rotulo, valor, rodape, alerta, medidor) {
+    return '<div class="kpi"><div class="kpi-label">' + esc(rotulo) + '</div>' +
+      '<div class="kpi-value">' + esc(valor) + '</div>' +
+      '<div class="kpi-foot' + (alerta ? ' is-bad' : '') + '">' + esc(rodape) + '</div>' +
+      (medidor != null ? '<div class="kpi-meter"><i style="width:' + Math.round(medidor) + '%"></i></div>' : '') +
+      '</div>';
+  }
+
+  function vazio(msg) { return '<p class="empty">' + esc(msg) + '</p>'; }
+
+  /* ---------------- funil (kanban) ---------------- */
+
+  function renderFunil() {
+    var lista = S.filtrar(filtrosAtuais({
+      busca: el('busca-funil').value,
+      vendedor: el('funil-vendedor').value
+    }));
+    el('kanban').innerHTML = S.STATUS.map(function (status) {
+      var itens = lista.filter(function (p) { return p.status === status; })
+        .sort(function (a, b) { return S.numero(b.valor) - S.numero(a.valor); });
+      var soma = itens.reduce(function (s, p) { return s + S.numero(p.valor); }, 0);
+      return '<div class="column" data-status="' + esc(status) + '">' +
+        '<div class="column-head"><strong>' + esc(status) + '</strong><span class="column-count">' + itens.length + '</span></div>' +
+        '<div class="column-sum">' + S.moedaCurta(soma) + '</div>' +
+        '<div class="column-body">' + (itens.length ? itens.map(cardHTML).join('') : '<p class="empty">Vazio</p>') + '</div></div>';
+    }).join('');
+    ligarArrastar();
+  }
+
+  function cardHTML(p) {
+    var urg = S.urgencia(p);
+    var cor = urg === 'alto' ? 'tag-bad' : urg === 'medio' ? 'tag-warn' : 'tag-ok';
+    return '<article class="card" draggable="true" data-id="' + p.id + '">' +
+      '<div class="card-top"><span>' + esc(p.contrato || '—') + selo(p) + '</span>' + tagClassificacao(p.classificacao) + '</div>' +
+      '<h3 class="card-title">' + esc(p.cliente || 'Sem cliente') + '</h3>' +
+      '<div class="card-top"><span>' + esc([p.cidade, p.estado].filter(Boolean).join('/') || '—') + '</span></div>' +
+      '<div class="card-meta"><span class="tag ' + cor + '">' + esc(textoContato(p)) + '</span>' +
+      '<span class="card-value">' + S.moedaCurta(p.valor) + '</span></div>' +
+      '<span class="stage-age">' + esc(textoEtapa(p)) + '</span></article>';
+  }
+
+  function ligarArrastar() {
+    var arrastando = null;
+    document.querySelectorAll('#kanban .card').forEach(function (card) {
+      card.addEventListener('dragstart', function () { arrastando = card; card.classList.add('dragging'); });
+      card.addEventListener('dragend', function () { card.classList.remove('dragging'); arrastando = null; });
+      card.addEventListener('click', function () { abrirProposta(card.dataset.id); });
+    });
+    document.querySelectorAll('#kanban .column').forEach(function (col) {
+      col.addEventListener('dragover', function (e) { e.preventDefault(); col.classList.add('drag-over'); });
+      col.addEventListener('dragleave', function () { col.classList.remove('drag-over'); });
+      col.addEventListener('drop', function (e) {
+        e.preventDefault();
+        col.classList.remove('drag-over');
+        if (!arrastando) return;
+        var alvo = arrastando.dataset.id;
+        S.atualizar(alvo, { status: col.dataset.status });
+        toast('Status alterado para ' + col.dataset.status);
+        renderFunil();
+        /* perdeu: abre a proposta já pedindo o motivo */
+        if (col.dataset.status === 'Perdida') abrirProposta(alvo);
+      });
+    });
+  }
+
+  /* ---------------- propostas ---------------- */
+
+  function listaPropostasFiltrada() {
+    var lista = S.filtrar(filtrosAtuais({
+      busca: el('busca').value,
+      status: el('f-status').value,
+      classificacao: el('f-classificacao').value,
+      estado: el('f-estado').value,
+      vendedor: el('f-vendedor').value
+    }));
+    var campo = estadoUI.ordem.campo, desc = estadoUI.ordem.desc;
+    lista.sort(function (a, b) {
+      var va, vb;
+      if (campo === 'valor') { va = S.numero(a.valor); vb = S.numero(b.valor); }
+      else if (campo === 'ultimoContato') { va = S.diasSemContato(a) || 0; vb = S.diasSemContato(b) || 0; }
+      else if (campo === 'diasEtapa') { va = S.diasNaEtapa(a) || 0; vb = S.diasNaEtapa(b) || 0; }
+      else { va = S.normalizar(a[campo]); vb = S.normalizar(b[campo]); }
+      if (va < vb) return desc ? 1 : -1;
+      if (va > vb) return desc ? -1 : 1;
+      return 0;
+    });
+    return lista;
+  }
+
+  function renderBulk() {
+    var barra = el('bulk-bar');
+    var n = estadoUI.selecao.length;
+    barra.hidden = n === 0;
+    el('bulk-count').textContent = n + ' selecionada' + (n > 1 ? 's' : '');
+    var visiveis = listaPropostasFiltrada().map(function (p) { return p.id; });
+    var todas = visiveis.length > 0 && visiveis.every(function (id) { return estadoUI.selecao.indexOf(id) > -1; });
+    el('sel-todas').checked = todas;
+  }
+
+  function alternarSelecao(idProposta, marcado) {
+    var i = estadoUI.selecao.indexOf(idProposta);
+    if (marcado && i === -1) estadoUI.selecao.push(idProposta);
+    if (!marcado && i > -1) estadoUI.selecao.splice(i, 1);
+    renderBulk();
+  }
+
+  function renderPropostas() {
+    var lista = listaPropostasFiltrada();
+    var total = lista.reduce(function (s, p) { return s + S.numero(p.valor); }, 0);
+    el('contador-propostas').textContent = lista.length + ' proposta(s) · ' + S.moeda(total);
+
+    el('tbody-propostas').innerHTML = lista.length ? lista.slice(0, 400).map(function (p) {
+      var marcada = estadoUI.selecao.indexOf(p.id) > -1;
+      return '<tr data-abrir="' + p.id + '"' + (marcada ? ' class="is-selected"' : '') + '>' +
+        '<td class="sel"><input type="checkbox" data-sel="' + p.id + '"' + (marcada ? ' checked' : '') + ' aria-label="Selecionar proposta" /></td>' +
+        '<td>' + esc(p.contrato || '—') + selo(p) + '</td>' +
+        '<td><strong>' + esc(p.cliente) + '</strong><br><small style="color:var(--ink-soft)">' + esc(p.contato || '') + '</small></td>' +
+        '<td>' + esc([p.cidade, p.estado].filter(Boolean).join('/')) + '</td>' +
+        '<td>' + esc(p.servico || '—') + '</td>' +
+        '<td class="num">' + S.moeda(p.valor) + '</td>' +
+        '<td>' + tagClassificacao(p.classificacao) + '</td>' +
+        '<td>' + tagStatus(p.status) + '</td>' +
+        '<td class="num">' + (S.diasNaEtapa(p) == null ? '—' : S.diasNaEtapa(p) + 'd') + '</td>' +
+        '<td>' + esc(textoContato(p)) + '</td></tr>';
+    }).join('') : '<tr><td colspan="10">' + vazio('Nada encontrado com esses filtros.') + '</td></tr>';
+
+    el('cards-propostas').innerHTML = lista.length ? lista.slice(0, 200).map(function (p) {
+      return '<article class="card" data-abrir="' + p.id + '">' +
+        '<div class="card-top"><span>' + esc(p.contrato || '—') + '</span>' + tagStatus(p.status) + '</div>' +
+        '<h3 class="card-title">' + esc(p.cliente) + '</h3>' +
+        '<div class="card-top"><span>' + esc([p.cidade, p.estado].filter(Boolean).join('/')) + ' · ' + esc(p.servico || '—') + '</span></div>' +
+        '<div class="card-meta">' + tagClassificacao(p.classificacao) + '<span class="card-value">' + S.moeda(p.valor) + '</span></div>' +
+        '<div class="card-top" style="margin-top:6px">último contato: ' + esc(textoContato(p)) + ' · ' + esc(textoEtapa(p)) + '</div></article>';
+    }).join('') : vazio('Nada encontrado com esses filtros.');
+
+    if (lista.length > 400) el('contador-propostas').textContent += ' (mostrando as 400 primeiras)';
+    renderBulk();
+  }
+
+  /* ---------------- follow-up ---------------- */
+
+  function renderFollowup() {
+    var lista = S.filtrar(filtrosAtuais({
+      vendedor: el('fu-vendedor').value,
+      somenteAbertas: el('fu-somente-abertas').checked
+    }));
+    if (el('fu-somente-agenda').checked) {
+      lista = lista.filter(function (p) { return !!p.proximoContato; });
+    }
+
+    var ordem = el('fu-ordem').value;
+    lista.sort(function (a, b) {
+      if (ordem === 'valor') return S.numero(b.valor) - S.numero(a.valor);
+      if (ordem === 'agenda') {
+        /* quem tem data marcada vem primeiro, do mais atrasado ao mais distante */
+        var da = a.proximoContato, db = b.proximoContato;
+        if (da && db) return da.localeCompare(db);
+        if (da) return -1;
+        if (db) return 1;
+      }
+      return (S.diasSemContato(b) || 0) - (S.diasSemContato(a) || 0);
+    });
+
+    var limite = S.config.diasFollowup;
+    var atrasadas = lista.filter(function (p) { return S.urgencia(p) !== 'ok'; });
+    var semNenhum = lista.filter(function (p) { return !S.ultimoContato(p); });
+    var reunioes = lista.reduce(function (s, p) { return s + S.contarAtividades(p, 'Reunião'); }, 0);
+    var ligacoes = lista.reduce(function (s, p) { return s + S.contarAtividades(p, 'Ligação'); }, 0);
+
+    var paraHoje = lista.filter(function (p) { return S.agendaStatus(p) === 'hoje'; });
+    var vencidos = lista.filter(function (p) { return S.agendaStatus(p) === 'atrasado'; });
+    var naSemana = lista.filter(function (p) { return S.agendaStatus(p) === 'semana'; });
+
+    el('fu-summary').innerHTML =
+      '<div class="fu-card fu-card-hoje"><b>' + paraHoje.length + '</b><span>marcados para hoje</span></div>' +
+      '<div class="fu-card fu-card-atraso"><b>' + vencidos.length + '</b><span>com data marcada vencida</span></div>' +
+      '<div class="fu-card"><b>' + naSemana.length + '</b><span>marcados para os próximos 7 dias</span></div>' +
+      '<div class="fu-card"><b>' + atrasadas.length + '</b><span>passaram de ' + limite + ' dias sem contato</span></div>' +
+      '<div class="fu-card"><b>' + semNenhum.length + '</b><span>nunca receberam contato registrado</span></div>' +
+      '<div class="fu-card"><b>' + ligacoes + ' / ' + reunioes + '</b><span>ligações / reuniões registradas</span></div>';
+
+    var total = lista.length;
+    var mostrando = Math.min(estadoUI.fuLimite, total);
+    el('fu-list').innerHTML = total ? lista.slice(0, mostrando).map(function (p) {
+      var d = S.diasSemContato(p);
+      return '<div class="fu-item" data-urg="' + S.urgencia(p) + '">' +
+        '<div class="fu-main"><strong>' + esc(p.cliente) + '</strong> ' + tagStatus(p.status) + selo(p) +
+        '<div class="fu-sub"><span>' + esc(p.contrato || '—') + '</span><span>' + esc([p.cidade, p.estado].filter(Boolean).join('/')) + '</span>' +
+        '<span>' + S.moeda(p.valor) + '</span><span>' + (d == null ? 'sem data' : d + ' dias sem contato') + '</span>' +
+        (p.vendedor ? '<span>' + esc(p.vendedor) + '</span>' : '') + '</div></div>' +
+        '<div class="fu-actions">' +
+        '<button class="btn btn-ghost btn-sm" data-registrar="Ligação" data-id="' + p.id + '">Ligação hoje</button>' +
+        '<button class="btn btn-ghost btn-sm" data-registrar="Reunião" data-id="' + p.id + '">Reunião hoje</button>' +
+        '<button class="btn btn-primary btn-sm" data-abrir="' + p.id + '">Abrir</button>' +
+        '</div></div>';
+    }).join('') : vazio('Tudo em dia por aqui.');
+
+    var maisBox = el('fu-more');
+    maisBox.hidden = total === 0;
+    el('fu-more-text').textContent = total
+      ? 'Exibindo ' + mostrando + ' de ' + total + (mostrando < total ? '' : ' — fim da lista')
+      : '';
+    el('fu-more-btn').hidden = mostrando >= total;
+    el('fu-more-btn').textContent = 'Mostrar mais ' + Math.min(120, total - mostrando);
+  }
+
+  /** Selo de agenda no cartão do follow-up. */
+  function selo(p) {
+    var st = S.agendaStatus(p);
+    if (st === 'sem' || st === 'futuro') {
+      return st === 'futuro' ? '<span class="tag tag-agenda">' + S.dataBR(p.proximoContato) + '</span>' : '';
+    }
+    var rotulos = { hoje: 'contato hoje', atrasado: 'contato vencido ' + S.dataBR(p.proximoContato), semana: S.dataBR(p.proximoContato) };
+    return '<span class="tag tag-agenda tag-agenda-' + st + '">' + rotulos[st] + '</span>';
+  }
+
+  /* ---------------- equipe ---------------- */
+
+  function renderEquipe() {
+    var dias = parseInt(el('eq-janela').value, 10);
+    var corte = new Date(Date.now() - dias * 86400000).toISOString().slice(0, 10);
+    var lista = S.filtrar(filtrosAtuais());
+    var nomes = S.vendedores.slice();
+    lista.forEach(function (p) { if (p.vendedor && nomes.indexOf(p.vendedor) === -1) nomes.push(p.vendedor); });
+    if (!nomes.length) nomes = ['Sem vendedor'];
+
+    el('tbody-equipe').innerHTML = nomes.map(function (nome) {
+      var minhas = lista.filter(function (p) { return (p.vendedor || 'Sem vendedor') === nome; });
+      var conta = function (tipo) {
+        return minhas.reduce(function (s, p) {
+          return s + (p.atividades || []).filter(function (a) { return a.tipo === tipo && (a.data || '') >= corte; }).length;
+        }, 0);
+      };
+      var outros = minhas.reduce(function (s, p) {
+        return s + (p.atividades || []).filter(function (a) {
+          return ['E-mail', 'WhatsApp', 'Visita', 'Outro'].includes(a.tipo) && (a.data || '') >= corte;
+        }).length;
+      }, 0);
+      var atrasadas = minhas.filter(function (p) { return S.urgencia(p) !== 'ok' && S.STATUS_ABERTOS.includes(p.status); }).length;
+      var fechado = minhas.filter(function (p) { return p.status === 'Fechada'; })
+        .reduce(function (s, p) { return s + S.numero(p.valor); }, 0);
+      return '<tr><td><strong>' + esc(nome) + '</strong></td><td class="num">' + minhas.length + '</td>' +
+        '<td class="num">' + conta('Ligação') + '</td><td class="num">' + conta('Reunião') + '</td>' +
+        '<td class="num">' + outros + '</td><td class="num">' + atrasadas + '</td>' +
+        '<td class="num">' + S.moeda(fechado) + '</td></tr>';
+    }).join('');
+
+    var recentes = [];
+    lista.forEach(function (p) {
+      (p.atividades || []).forEach(function (a) { recentes.push({ p: p, a: a }); });
+    });
+    recentes.sort(function (x, y) { return S.chaveMomento(y.a).localeCompare(S.chaveMomento(x.a)); });
+    el('ultimas-atividades').innerHTML = recentes.length ? recentes.slice(0, 12).map(function (r) {
+      return '<div class="mini-row clickable" data-abrir="' + r.p.id + '"><div class="m-main"><strong>' + esc(r.a.tipo) + ' · ' + esc(r.p.cliente) + '</strong>' +
+        '<small>' + esc(r.a.responsavel || 'sem responsável') + (r.a.obs ? ' — ' + esc(r.a.obs) : '') + '</small></div>' +
+        '<span class="m-val">' + S.dataHoraBR(r.a.data, r.a.hora) + '</span></div>';
+    }).join('') : vazio('Nenhuma atividade registrada ainda.');
+
+    if (window.Charts && window.Chart) { Charts.base(); Charts.equipe(lista, S.vendedores.slice(), dias); }
+  }
+
+  /* ---------------- relatório semanal ---------------- */
+
+  function preencherSemanas() {
+    var sel = el('rel-semana');
+    if (sel.options.length) return;
+    var itens = [];
+    for (var i = 0; i < 12; i++) {
+      var ref = new Date();
+      ref.setDate(ref.getDate() - i * 7);
+      var sem = S.semanaDe(ref.getFullYear() + '-' + ('0' + (ref.getMonth() + 1)).slice(-2) + '-' + ('0' + ref.getDate()).slice(-2));
+      var rotulo = S.dataBR(sem.inicio) + ' a ' + S.dataBR(sem.fim);
+      if (i === 0) rotulo = 'Esta semana (' + rotulo + ')';
+      if (i === 1) rotulo = 'Semana passada (' + rotulo + ')';
+      itens.push('<option value="' + sem.inicio + '">' + rotulo + '</option>');
+    }
+    sel.innerHTML = itens.join('');
+  }
+
+  function renderRelatorio() {
+    preencherSemanas();
+    var sel = el('rel-semana');
+    var inicio = estadoUI.relSemana || sel.value || '';
+    if (inicio) sel.value = inicio;
+
+    var vend = el('rel-vendedor').value;
+    var base = S.propostas.filter(function (p) { return !vend || p.vendedor === vend; });
+    var r = S.relatorioSemana(inicio, base);
+
+    el('rel-corpo').innerHTML =
+      '<div class="report-head">' +
+      '<div><h2>Reunião comercial</h2>' +
+      '<p>Semana de ' + S.dataBR(r.inicio) + ' a ' + S.dataBR(r.fim) +
+      (vend ? ' · ' + esc(vend) : ' · toda a equipe') + '</p></div>' +
+      '<div class="report-brand"><strong>Sammour Engenharia</strong><span>emitido em ' + S.dataBR(S.hojeISO()) + '</span></div>' +
+      '</div>' +
+
+      '<div class="report-kpis">' +
+      relKpi('Fechadas na semana', r.fechadas.length, S.moeda(r.valorFechado)) +
+      relKpi('Perdidas na semana', r.perdidas.length, S.moeda(r.valorPerdido)) +
+      relKpi('Propostas novas', r.novas.length, S.moeda(r.valorNovo)) +
+      relKpi('Em aberto hoje', r.abertasQtd, S.moeda(r.abertasValor)) +
+      '</div>' +
+
+      relSecao('Fechadas', r.fechadas.map(function (f) {
+        return relLinha(f.p, S.dataBR(f.data), S.moeda(f.p.valor));
+      }), 'Nenhuma proposta fechada nesta semana.') +
+
+      relSecao('Perdidas', r.perdidas.map(function (x) {
+        return relLinha(x.p, S.dataBR(x.data) + ' · ' + (x.p.motivoPerda || 'motivo não informado'), S.moeda(x.p.valor));
+      }), 'Nenhuma proposta perdida nesta semana.') +
+      (Object.keys(r.motivos).length
+        ? '<p class="report-note">Motivos: ' + Object.keys(r.motivos).map(function (m) {
+            return esc(m) + ' (' + r.motivos[m] + ')';
+          }).join(' · ') + '</p>'
+        : '') +
+
+      '<div class="report-section"><h3>Esforço e resultado por vendedor</h3>' +
+      '<table class="table table-report"><thead><tr><th>Vendedor</th><th class="num">Contatos</th>' +
+      '<th class="num">Ligações</th><th class="num">Reuniões</th><th class="num">Fechado</th>' +
+      '<th class="num">Agendados</th></tr></thead><tbody>' +
+      (r.equipe.length ? r.equipe.map(function (v) {
+        return '<tr><td>' + esc(v.vendedor) + '</td><td class="num">' + v.contatos + '</td>' +
+          '<td class="num">' + v.ligacoes + '</td><td class="num">' + v.reunioes + '</td>' +
+          '<td class="num">' + S.moeda(v.fechado) + '</td><td class="num">' + v.agendados + '</td></tr>';
+      }).join('') : '<tr><td colspan="6">Nenhum vendedor cadastrado.</td></tr>') +
+      '</tbody></table></div>' +
+
+      relSecao('Agenda: de hoje até ' + S.dataBR(r.proximaFim),
+        r.agenda.map(function (p) {
+          return relLinha(p, S.dataBR(p.proximoContato) + ' · ' + (p.vendedor || 'sem vendedor'), S.moeda(p.valor));
+        }), 'Nenhum contato marcado para os próximos dias.') +
+
+      relSecao('Contatos marcados e já vencidos', r.atrasados.map(function (p) {
+        return relLinha(p, 'era ' + S.dataBR(p.proximoContato) + ' · ' + (p.vendedor || 'sem vendedor'), S.moeda(p.valor));
+      }), 'Nada vencido.') +
+
+      relSecao('Sem data marcada e passando do prazo', r.semAgenda.slice(0, 15).map(function (p) {
+        return relLinha(p, S.diasSemContato(p) + ' dias sem contato · ' + (p.vendedor || 'sem vendedor'), S.moeda(p.valor));
+      }), 'Nenhuma proposta nessa situação.') +
+      (r.semAgenda.length > 15 ? '<p class="report-note">e mais ' + (r.semAgenda.length - 15) + ' propostas na mesma situação.</p>' : '');
+  }
+
+  function relKpi(rotulo, qtd, valor) {
+    return '<div class="report-kpi"><span>' + esc(rotulo) + '</span><b>' + qtd + '</b><small>' + valor + '</small></div>';
+  }
+
+  function relSecao(titulo, linhas, vazioTexto) {
+    return '<div class="report-section"><h3>' + esc(titulo) + ' <span class="report-count">' + linhas.length + '</span></h3>' +
+      (linhas.length ? '<ul class="report-list">' + linhas.join('') + '</ul>'
+        : '<p class="report-empty">' + esc(vazioTexto) + '</p>') + '</div>';
+  }
+
+  function relLinha(p, meio, direita) {
+    return '<li><span class="rl-cli">' + esc(p.cliente || 'sem cliente') + '</span>' +
+      '<span class="rl-meta">' + esc(p.contrato || '—') + ' · ' + esc(p.servico || 'serviço não informado') +
+      ' · ' + esc(meio) + '</span>' +
+      '<span class="rl-val">' + direita + '</span></li>';
+  }
+
+  /* ---------------- ajustes ---------------- */
+
+  function renderConfig() {
+    el('cfg-meta-propostas').value = S.config.metaPropostas;
+    el('cfg-meta-valor').value = S.valorCampo(S.config.metaValor);
+    el('cfg-dias-followup').value = S.config.diasFollowup;
+    el('lista-vendedores').innerHTML = S.vendedores.length ? S.vendedores.map(function (v) {
+      return '<span class="chip">' + esc(v) + '<button data-remover-vendedor="' + esc(v) + '" aria-label="Remover">✕</button></span>';
+    }).join('') : '<p class="empty">Nenhum vendedor cadastrado.</p>';
+  }
+
+  /* ---------------- drawer da proposta ---------------- */
+
+  function abrirProposta(idProposta) {
+    var p = S.propostas.find(function (x) { return x.id === idProposta; });
+    if (!p) return;
+    estadoUI.propostaAberta = idProposta;
+    el('drawer-contrato').innerHTML = esc(p.contrato || 'Sem contrato') + (p.revisao ? ' · Rev.' + String(p.revisao).padStart(2, '0') : '');
+    el('drawer-cliente').textContent = p.cliente || 'Sem cliente';
+    el('drawer-body').innerHTML = corpoDrawer(p);
+    el('drawer').hidden = false;
+    el('drawer-backdrop').hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function fecharDrawer() {
+    el('drawer').hidden = true;
+    el('drawer-backdrop').hidden = true;
+    document.body.style.overflow = '';
+    estadoUI.propostaAberta = null;
+  }
+
+  function corpoDrawer(p) {
+    var vendedores = [''].concat(S.vendedores);
+    var atividades = (p.atividades || []).slice().sort(function (a, b) { return S.chaveMomento(b).localeCompare(S.chaveMomento(a)); });
+
+    var etapas = (p.historicoStatus || []).slice().reverse();
+    return '' +
+      '<div class="dsection"><h3>Situação</h3>' +
+      '<p class="panel-text">' + esc(textoEtapa(p) || 'sem data de entrada na etapa') +
+      ' · último contato ' + esc(textoContato(p, true)) + '</p>' +
+      '<div class="dgrid">' +
+      campoSelect('status', 'Status', S.STATUS, p.status) +
+      campoSelect('classificacao', 'Classificação', S.CLASSIFICACOES, p.classificacao) +
+      campoSelect('vendedor', 'Vendedor responsável', vendedores, p.vendedor) +
+      campoValor(p.valor) +
+      '</div>' +
+      (p.status === 'Perdida'
+        ? '<div class="dgrid">' + campoSelect('motivoPerda', 'Motivo da perda', [''].concat(S.MOTIVOS_PERDA), p.motivoPerda) + '</div>' +
+          (p.motivoPerda ? '' : '<p class="panel-text alerta">Informe o motivo — é o que alimenta o relatório de perdas.</p>')
+        : '') +
+      (S.STATUS_ABERTOS.indexOf(p.status) > -1
+        ? '<div class="dgrid">' +
+          campoTexto('proximoContato', 'Próximo contato em', p.proximoContato, 'date') +
+          '<div class="field"><span>&nbsp;</span><div class="btn-row-sm">' +
+          '<button class="btn btn-ghost btn-sm" data-agendar="1">+1 dia</button>' +
+          '<button class="btn btn-ghost btn-sm" data-agendar="7">+1 semana</button>' +
+          '<button class="btn btn-ghost btn-sm" data-agendar="15">+15 dias</button>' +
+          '</div></div></div>' +
+          textoAgenda(p)
+        : '') +
+      '</div>' +
+
+      '<div class="dsection"><h3>Registrar contato</h3>' +
+      '<div class="dgrid">' +
+      '<label class="field"><span>Data do contato</span>' +
+      '<input class="input" type="date" id="data-atividade" value="' + esc(S.hojeISO()) + '" max="' + esc(S.hojeISO()) + '" /></label>' +
+      '<label class="field"><span>Horário</span>' +
+      '<input class="input" type="time" id="hora-atividade" value="' + esc(S.agoraHora()) + '" /></label>' +
+      '</div>' +
+      '<p class="panel-text" style="margin:2px 0 10px">Vem preenchido com agora. Ajuste antes de clicar no tipo de contato para lançar um atendimento anterior.</p>' +
+      '<div class="quick-acts">' +
+      S.TIPOS_ATIVIDADE.map(function (t) {
+        return '<button class="btn btn-ghost btn-sm" data-registrar="' + t + '" data-id="' + p.id + '">' + t + '</button>';
+      }).join('') + '</div>' +
+      '<label class="field"><span>Observação do próximo contato (opcional)</span>' +
+      '<input class="input" id="obs-atividade" placeholder="Ex.: cliente pediu revisão do escopo" /></label></div>' +
+
+      '<div class="dsection"><h3>Etapas do funil</h3><div class="timeline">' +
+      etapas.map(function (h) {
+        return '<div class="tl-item"><div class="tl-dot"></div><div class="tl-body">' +
+          '<strong>' + esc(h.status) + '</strong> <span class="tl-meta">' + S.dataBR(h.data) + '</span></div></div>';
+      }).join('') + '</div></div>' +
+
+      '<div class="dsection"><h3>Histórico de contatos (' + atividades.length + ')</h3><div class="timeline">' +
+      (atividades.length ? atividades.map(function (a) {
+        return '<div class="tl-item"><div class="tl-dot"></div><div class="tl-body">' +
+          '<strong>' + esc(a.tipo) + '</strong> <span class="tl-meta">' + S.dataHoraBR(a.data, a.hora) + (a.responsavel ? ' · ' + esc(a.responsavel) : '') + '</span>' +
+          (a.obs ? '<p>' + esc(a.obs) + '</p>' : '') +
+          '<button class="btn btn-ghost btn-sm" style="margin-top:6px" data-excluir-atividade="' + a.id + '">Remover</button>' +
+          '</div></div>';
+      }).join('') : '<p class="empty">Nenhum contato registrado.</p>') + '</div></div>' +
+
+      '<div class="dsection"><h3>Cliente</h3><div class="dgrid">' +
+      campoTexto('cliente', 'Cliente', p.cliente) +
+      campoTexto('cnpj', 'CNPJ', p.cnpj) +
+      campoTexto('contato', 'Contato', p.contato) +
+      campoTexto('telefone', 'Telefone', p.telefone) +
+      campoTexto('email', 'E-mail', p.email) +
+      campoTexto('cidade', 'Cidade', p.cidade) +
+      campoTexto('estado', 'UF', p.estado) +
+      campoServico(p.servico) +
+      '</div></div>' +
+
+      '<div class="dsection"><h3>Proposta</h3>' +
+      campoTexto('contrato', 'Contrato', p.contrato) +
+      campoTexto('dataProposta', 'Data da proposta', p.dataProposta, 'date') +
+      campoTexto('obra', 'Obra', p.obra) +
+      campoTexto('descricao', 'Descrição', p.descricao) +
+      '<label class="field"><span>Observações internas</span><textarea class="input" rows="3" data-campo="observacoes">' + esc(p.observacoes || '') + '</textarea></label>' +
+      '</div>' +
+
+      '<div class="btn-row"><button class="btn btn-ghost" id="btn-ligar-cliente">Ligar</button>' +
+      '<button class="btn btn-ghost" id="btn-email-cliente">Enviar e-mail</button>' +
+      '<button class="btn btn-danger" id="btn-excluir-proposta">Excluir proposta</button></div>';
+  }
+
+  function campoTexto(campo, rotulo, valor, tipo) {
+    return '<label class="field"><span>' + esc(rotulo) + '</span>' +
+      '<input class="input" type="' + (tipo || 'text') + '" data-campo="' + campo + '" value="' + esc(valor == null ? '' : valor) + '" /></label>';
+  }
+
+  /** Valor aceita "1.250.000" e "1250000,50"; é reexibido formatado ao sair do campo. */
+  function campoValor(valor) {
+    return '<label class="field"><span>Valor (R$)</span>' +
+      '<input class="input" type="text" inputmode="decimal" data-campo="valor" ' +
+      'placeholder="0" value="' + esc(S.valorCampo(valor)) + '" /></label>';
+  }
+
+  function emDias(dias) {
+    var d = new Date();
+    d.setDate(d.getDate() + dias);
+    return d.getFullYear() + '-' + ('0' + (d.getMonth() + 1)).slice(-2) + '-' + ('0' + d.getDate()).slice(-2);
+  }
+
+  function textoAgenda(p) {
+    var d = S.diasParaProximo(p);
+    if (d == null) return '<p class="panel-text">Sem próximo contato marcado — a proposta só aparece no follow-up pelo tempo sem contato.</p>';
+    var quando = d === 0 ? 'hoje' : (d < 0 ? 'atrasado há ' + (-d) + ' dia(s)' : 'em ' + d + ' dia(s)');
+    return '<p class="panel-text' + (d <= 0 ? ' alerta' : '') + '">Próximo contato ' + quando +
+      ' (' + S.dataBR(p.proximoContato) + '). Ao registrar um contato nessa data ou depois, a marcação é baixada automaticamente.</p>';
+  }
+
+  /** Serviço: lista fixa da empresa, mantendo o que veio da planilha e permitindo digitar um caso novo. */
+  function campoServico(valor) {
+    var atual = String(valor || '').trim();
+    var lista = S.SERVICOS.slice();
+    var foraDaLista = atual && lista.indexOf(atual) === -1;
+    if (foraDaLista) lista.push(atual);
+    return '<label class="field"><span>Serviço</span>' +
+      '<select class="input" id="sel-servico" data-campo="servico">' +
+      '<option value=""' + (atual ? '' : ' selected') + '>— selecionar —</option>' +
+      opcoes(lista, atual) +
+      '<option value="__outro__">Outro (digitar)…</option>' +
+      '</select>' +
+      '<input class="input" id="txt-servico" data-campo="servico" hidden style="margin-top:6px" ' +
+      'placeholder="Descreva o serviço" value="" /></label>';
+  }
+
+  function campoSelect(campo, rotulo, lista, valor) {
+    return '<label class="field"><span>' + esc(rotulo) + '</span>' +
+      '<select class="input" data-campo="' + campo + '">' + opcoes(lista, valor) + '</select></label>';
+  }
+
+  function salvarCampoDrawer(elemento) {
+    var campo = elemento.dataset.campo;
+    if (!campo || !estadoUI.propostaAberta) return;
+    var valor = elemento.value;
+    if (campo === 'servico' && valor === '__outro__') {
+      var txt = el('txt-servico');
+      if (txt) { txt.hidden = false; txt.value = ''; txt.focus(); }
+      return;
+    }
+    if (campo === 'valor') {
+      valor = S.numero(valor);
+      elemento.value = S.valorCampo(valor);
+    }
+    if (campo === 'estado') valor = String(valor).toUpperCase().slice(0, 2);
+    if (campo === 'servico') {
+      valor = String(valor).toUpperCase().trim();
+      if (elemento.id === 'sel-servico' && el('txt-servico')) el('txt-servico').hidden = true;
+    }
+    var alteracao = {};
+    alteracao[campo] = valor;
+    S.atualizar(estadoUI.propostaAberta, alteracao);
+    /* Perdida mostra o motivo; encerrar tira a proposta da agenda — o drawer precisa refletir isso */
+    if (campo === 'status') { abrirProposta(estadoUI.propostaAberta); renderizarView(estadoUI.view); return; }
+    if (campo === 'motivoPerda' || campo === 'proximoContato') {
+      abrirProposta(estadoUI.propostaAberta); renderizarView(estadoUI.view); return;
+    }
+    if (campo === 'cliente') el('drawer-cliente').textContent = valor || 'Sem cliente';
+    if (campo === 'contrato') el('drawer-contrato').textContent = valor || 'Sem contrato';
+    renderizarView(estadoUI.view);
+  }
+
+  /* ---------------- selects dinâmicos ---------------- */
+
+  function preencherSelects() {
+    var ufs = Array.from(new Set(S.propostas.map(function (p) { return p.estado; }).filter(Boolean))).sort();
+    var vendedores = S.vendedores.slice();
+    S.propostas.forEach(function (p) { if (p.vendedor && vendedores.indexOf(p.vendedor) === -1) vendedores.push(p.vendedor); });
+
+    function preencher(id, itens, rotuloVazio) {
+      var sel = el(id);
+      if (!sel) return;
+      var atual = sel.value;
+      sel.innerHTML = '<option value="">' + rotuloVazio + '</option>' + opcoes(itens);
+      sel.value = itens.indexOf(atual) > -1 ? atual : '';
+    }
+    preencher('f-status', S.STATUS, 'Status: todos');
+    preencher('f-estado', ufs, 'UF: todas');
+    preencher('f-vendedor', vendedores, 'Vendedor: todos');
+    preencher('funil-vendedor', vendedores, 'Todos os vendedores');
+    preencher('fu-vendedor', vendedores, 'Todos os vendedores');
+    preencher('rel-vendedor', vendedores, 'Todos os vendedores');
+    preencherPeriodos();
+  }
+
+  /** Períodos fixos + um item por ano encontrado nas propostas (o ano vem do nº do contrato). */
+  function preencherPeriodos() {
+    var sel = el('filtro-periodo');
+    var anos = S.anosComPropostas();
+    var html = '<option value="tudo">Todo o período</option>' +
+      '<option value="7">Últimos 7 dias</option>' +
+      '<option value="30">Últimos 30 dias</option>' +
+      '<option value="90">Últimos 90 dias</option>' +
+      anos.map(function (a) {
+        return '<option value="ano:' + a.ano + '">' + a.ano + ' (' + a.qtd + ')</option>';
+      }).join('');
+    if (sel.innerHTML === html) return;
+    sel.innerHTML = html;
+    /* mantém a escolha; se o ano sumiu da base, volta para todo o período */
+    var existe = Array.prototype.some.call(sel.options, function (o) { return o.value === estadoUI.periodo; });
+    if (!existe) estadoUI.periodo = 'tudo';
+    sel.value = estadoUI.periodo;
+  }
+
+  /* ---------------- eventos globais ---------------- */
+
+  function ligarEventos() {
+    document.querySelectorAll('.nav-item, .tab, .aviso-vazio [data-view]').forEach(function (b) {
+      b.addEventListener('click', function () { mostrarView(b.dataset.view); });
+    });
+
+    el('filtro-periodo').addEventListener('change', function (e) {
+      estadoUI.periodo = e.target.value;
+      renderizarView(estadoUI.view);
+    });
+
+    ['btn-nova-proposta', 'btn-nova-proposta-top'].forEach(function (id) {
+      var b = el(id);
+      if (b) b.addEventListener('click', criarProposta);
+    });
+
+    // filtros
+    ['busca', 'f-status', 'f-classificacao', 'f-estado', 'f-vendedor'].forEach(function (id) {
+      el(id).addEventListener('input', renderPropostas);
+      el(id).addEventListener('change', renderPropostas);
+    });
+    ['busca-funil', 'funil-vendedor'].forEach(function (id) {
+      el(id).addEventListener('input', renderFunil);
+      el(id).addEventListener('change', renderFunil);
+    });
+    ['fu-vendedor', 'fu-ordem', 'fu-somente-abertas', 'fu-somente-agenda'].forEach(function (id) {
+      el(id).addEventListener('change', function () { estadoUI.fuLimite = 120; renderFollowup(); });
+    });
+    el('fu-more-btn').addEventListener('click', function () {
+      estadoUI.fuLimite += 120;
+      renderFollowup();
+    });
+    el('ch-estado-modo').addEventListener('change', renderPainel);
+    el('eq-janela').addEventListener('change', renderEquipe);
+    el('rel-semana').addEventListener('change', function (e) {
+      estadoUI.relSemana = e.target.value;
+      renderRelatorio();
+    });
+    el('rel-vendedor').addEventListener('change', renderRelatorio);
+    el('rel-imprimir').addEventListener('click', function () { window.print(); });
+
+    // ordenação da tabela
+    document.querySelectorAll('#tabela-propostas th[data-sort]').forEach(function (th) {
+      th.addEventListener('click', function () {
+        var campo = th.dataset.sort;
+        if (estadoUI.ordem.campo === campo) estadoUI.ordem.desc = !estadoUI.ordem.desc;
+        else estadoUI.ordem = { campo: campo, desc: true };
+        renderPropostas();
+      });
+    });
+
+    // seleção múltipla
+    document.addEventListener('change', function (e) {
+      var cx = e.target.closest && e.target.closest('[data-sel]');
+      if (cx) { alternarSelecao(cx.dataset.sel, cx.checked); renderPropostas(); }
+    });
+    document.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('[data-sel]')) e.stopPropagation();
+    }, true);
+
+    el('sel-todas').addEventListener('change', function (e) {
+      var visiveis = listaPropostasFiltrada().map(function (p) { return p.id; });
+      if (e.target.checked) {
+        visiveis.forEach(function (id) { if (estadoUI.selecao.indexOf(id) === -1) estadoUI.selecao.push(id); });
+      } else {
+        estadoUI.selecao = estadoUI.selecao.filter(function (id) { return visiveis.indexOf(id) === -1; });
+      }
+      renderPropostas();
+    });
+
+    el('bulk-status').innerHTML = opcoes(S.STATUS, 'Enviada');
+    el('bulk-motivo').innerHTML = '<option value="">Motivo da perda…</option>' + opcoes(S.MOTIVOS_PERDA, '');
+    el('bulk-status').addEventListener('change', function () {
+      el('bulk-motivo').hidden = el('bulk-status').value !== 'Perdida';
+    });
+    el('bulk-aplicar').addEventListener('click', function () {
+      var novo = el('bulk-status').value;
+      var motivo = el('bulk-motivo').value;
+      var n = estadoUI.selecao.length;
+      if (!n) return;
+      if (novo === 'Perdida' && !motivo) { toast('Escolha o motivo da perda.'); return; }
+      estadoUI.selecao.forEach(function (id) {
+        S.atualizar(id, novo === 'Perdida' ? { status: novo, motivoPerda: motivo } : { status: novo });
+      });
+      estadoUI.selecao = [];
+      renderTudo();
+      toast(n + ' proposta(s) marcada(s) como ' + novo + (novo === 'Perdida' ? ' (' + motivo + ')' : '') + '.');
+    });
+    el('bulk-excluir').addEventListener('click', function () {
+      var ids = estadoUI.selecao.slice();
+      if (!ids.length) return;
+      var alvo = S.propostas.filter(function (p) { return ids.indexOf(p.id) > -1; });
+      var valor = alvo.reduce(function (t, p) { return t + S.numero(p.valor); }, 0);
+      var exemplos = alvo.slice(0, 3).map(function (p) { return p.cliente || 'sem cliente'; }).join(', ');
+      if (alvo.length > 3) exemplos += ' e mais ' + (alvo.length - 3);
+      var aviso = 'Excluir ' + alvo.length + ' proposta(s)?\n\n' + exemplos +
+        '\nValor somado: ' + S.moeda(valor) +
+        '\n\nA exclusão apaga também o histórico de contatos e não pode ser desfeita.';
+      if (!confirm(aviso)) return;
+      var n = S.removerVarios(ids);
+      estadoUI.selecao = [];
+      if (estadoUI.propostaAberta && ids.indexOf(estadoUI.propostaAberta) > -1) fecharDrawer();
+      renderTudo();
+      toast(n + ' proposta(s) excluída(s).');
+    });
+
+    el('bulk-limpar').addEventListener('click', function () {
+      estadoUI.selecao = [];
+      renderPropostas();
+    });
+
+    el('btn-exportar-csv').addEventListener('click', function () {
+      if (!I.exportarCSV(listaPropostasFiltrada())) toast('Nada para exportar.');
+    });
+
+    // cliques delegados: abrir proposta e registrar atividade
+    document.addEventListener('click', function (e) {
+      var registrar = e.target.closest('[data-registrar]');
+      if (registrar) {
+        e.stopPropagation();
+        // os campos de data/hora só existem no drawer; os botões do Follow-up registram agora
+        var noDrawer = !!registrar.closest('#drawer') && estadoUI.propostaAberta === registrar.dataset.id;
+        var dataInput = noDrawer ? el('data-atividade') : null;
+        var horaInput = noDrawer ? el('hora-atividade') : null;
+        var obsInput = noDrawer ? el('obs-atividade') : null;
+
+        var data = (dataInput && dataInput.value) || S.hojeISO();
+        var hora = (horaInput && horaInput.value) || S.agoraHora();
+        if (data > S.hojeISO()) { toast('A data do contato não pode estar no futuro.'); return; }
+
+        var p = S.propostas.find(function (x) { return x.id === registrar.dataset.id; });
+        S.registrarAtividade(registrar.dataset.id, {
+          tipo: registrar.dataset.registrar,
+          data: data,
+          hora: hora,
+          responsavel: (p && p.vendedor) || '',
+          obs: obsInput ? obsInput.value.trim() : ''
+        });
+        toast(registrar.dataset.registrar + ' registrada em ' + S.dataHoraBR(data, hora) + '.');
+        if (estadoUI.propostaAberta === registrar.dataset.id) abrirProposta(registrar.dataset.id);
+        renderizarView(estadoUI.view);
+        return;
+      }
+      var excluirAtiv = e.target.closest('[data-excluir-atividade]');
+      if (excluirAtiv && estadoUI.propostaAberta) {
+        S.removerAtividade(estadoUI.propostaAberta, excluirAtiv.dataset.excluirAtividade);
+        abrirProposta(estadoUI.propostaAberta);
+        renderizarView(estadoUI.view);
+        return;
+      }
+      if (e.target.closest('[data-sel]')) return;
+      var abrir = e.target.closest('[data-abrir]');
+      if (abrir) { abrirProposta(abrir.dataset.abrir); return; }
+
+      var removerVend = e.target.closest('[data-remover-vendedor]');
+      if (removerVend) {
+        var nome = removerVend.dataset.removerVendedor;
+        S.estado.vendedores = S.vendedores.filter(function (v) { return v !== nome; });
+        S.salvar(); renderConfig(); preencherSelects();
+        return;
+      }
+    });
+
+    // drawer
+    el('drawer-close').addEventListener('click', fecharDrawer);
+    el('drawer-backdrop').addEventListener('click', fecharDrawer);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') fecharDrawer(); });
+    el('drawer-body').addEventListener('change', function (e) {
+      if (e.target.dataset.campo) salvarCampoDrawer(e.target);
+    });
+    el('drawer-body').addEventListener('click', function (e) {
+      var p = S.propostas.find(function (x) { return x.id === estadoUI.propostaAberta; });
+      if (!p) return;
+      var agendar = e.target.closest('[data-agendar]');
+      if (agendar) {
+        var dias = parseInt(agendar.dataset.agendar, 10) || 0;
+        S.atualizar(p.id, { proximoContato: emDias(dias) });
+        abrirProposta(p.id);
+        renderizarView(estadoUI.view);
+        toast('Próximo contato marcado para ' + S.dataBR(emDias(dias)) + '.');
+        return;
+      }
+      if (e.target.id === 'btn-ligar-cliente') {
+        if (p.telefone) window.location.href = 'tel:' + p.telefone.replace(/[^\d+]/g, '');
+        else toast('Sem telefone cadastrado.');
+      }
+      if (e.target.id === 'btn-email-cliente') {
+        if (p.email) window.location.href = 'mailto:' + p.email + '?subject=' + encodeURIComponent('Proposta ' + (p.contrato || ''));
+        else toast('Sem e-mail cadastrado.');
+      }
+      if (e.target.id === 'btn-excluir-proposta') {
+        if (confirm('Excluir a proposta de ' + p.cliente + '? Esta ação não pode ser desfeita.')) {
+          S.remover(p.id); fecharDrawer(); renderTudo(); toast('Proposta excluída.');
+        }
+      }
+    });
+
+    ligarImportacoes();
+    ligarConfig();
+  }
+
+  function criarProposta() {
+    S.adicionar({ cliente: 'Nova proposta', status: 'Nova', dataProposta: S.hojeISO() });
+    var novo = S.propostas[S.propostas.length - 1];
+    renderTudo();
+    abrirProposta(novo.id);
+  }
+
+  /* ---------------- importações ---------------- */
+
+  function ligarImportacoes() {
+    el('in-xlsx').addEventListener('change', function (e) {
+      var arq = e.target.files[0];
+      if (!arq) return;
+      el('log-xlsx').innerHTML = '';
+      logar('log-xlsx', 'Lendo ' + arq.name + '...');
+      I.lerPlanilha(arq, function () { renderTudo(); toast('Planilha importada.'); },
+        function (m) { logar('log-xlsx', m); });
+      e.target.value = '';
+    });
+
+    function importarPdfs(e) {
+      var arquivos = e.target.files;
+      if (!arquivos || !arquivos.length) return;
+      el('log-pdf').innerHTML = '';
+      el('pdf-progress').hidden = false;
+      I.processarPdfs(arquivos,
+        function (pct, nome) {
+          el('pdf-progress-bar').style.width = Math.round(pct * 100) + '%';
+        },
+        function () {
+          el('pdf-progress-bar').style.width = '100%';
+          setTimeout(function () { el('pdf-progress').hidden = true; el('pdf-progress-bar').style.width = '0'; }, 1200);
+          renderTudo();
+          toast('PDFs processados.');
+        },
+        function (m) { logar('log-pdf', m); });
+      e.target.value = '';
+    }
+    el('in-pdfs').addEventListener('change', importarPdfs);
+    el('in-pasta').addEventListener('change', importarPdfs);
+
+    el('btn-backup').addEventListener('click', function () {
+      I.exportarBackup();
+      logar('log-backup', 'Backup gerado em ' + new Date().toLocaleString('pt-BR') + '.');
+    });
+    el('in-json').addEventListener('change', function (e) {
+      var arq = e.target.files[0];
+      if (!arq) return;
+      I.importarBackup(arq, function () { renderTudo(); toast('Backup restaurado.'); },
+        function (m) { logar('log-backup', m); });
+      e.target.value = '';
+    });
+    el('btn-exportar-xlsx').addEventListener('click', function () {
+      if (!I.exportarXLSX(S.propostas)) toast('Nada para exportar.');
+    });
+    el('in-json-extrator').addEventListener('change', function (e) {
+      var arq = e.target.files[0];
+      if (!arq) return;
+      el('log-extrator').innerHTML = '';
+      I.importarJsonExtrator(arq, function () { renderTudo(); toast('Propostas atualizadas.'); },
+        function (m) { logar('log-extrator', m); });
+      e.target.value = '';
+    });
+    el('btn-limpar').addEventListener('click', function () {
+      if (confirm('Apagar todas as propostas e atividades deste dispositivo?')) {
+        S.limpar(); renderTudo(); toast('Base limpa.');
+      }
+    });
+  }
+
+  function ligarConfig() {
+    el('btn-salvar-config').addEventListener('click', function () {
+      S.config.metaPropostas = parseInt(el('cfg-meta-propostas').value, 10) || 0;
+      S.config.metaValor = S.numero(el('cfg-meta-valor').value);
+      el('cfg-meta-valor').value = S.valorCampo(S.config.metaValor);
+      S.config.diasFollowup = parseInt(el('cfg-dias-followup').value, 10) || 15;
+      S.salvar();
+      toast('Ajustes salvos.');
+      renderPainel();
+    });
+    el('btn-add-vendedor').addEventListener('click', function () {
+      var nome = el('novo-vendedor').value.trim();
+      if (!nome) return;
+      if (S.vendedores.indexOf(nome) === -1) S.vendedores.push(nome);
+      S.salvar();
+      el('novo-vendedor').value = '';
+      renderConfig(); preencherSelects();
+    });
+  }
+
+  /* ---------------- inicialização ---------------- */
+
+  function iniciar() {
+    if (!S.localOk) {
+      el('storage-hint').textContent = 'Este navegador bloqueia o armazenamento local: exporte o backup antes de fechar.';
+    }
+    ligarEventos();
+    preencherSelects();
+    mostrarView('painel');
+    if (!S.propostas.length) {
+      setTimeout(function () { toast('Comece importando sua planilha em Importar.'); }, 700);
+    }
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', iniciar);
+  else iniciar();
+})();
+
+</script>
+</body>
+</html>
